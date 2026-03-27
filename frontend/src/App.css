@@ -1,34 +1,106 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* Global App Styles & Animations */
+
+/* Chatbot orb pulse animation */
+@keyframes chatbot-orb {
+  0% { box-shadow: 0 0 0 0 rgba(108,99,255,0.7), 0 0 0 0 rgba(0,212,255,0.4); }
+  70% { box-shadow: 0 0 0 12px rgba(108,99,255,0), 0 0 0 24px rgba(0,212,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(108,99,255,0), 0 0 0 0 rgba(0,212,255,0); }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+/* Particle XP explosion */
+@keyframes particle-up {
+  0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-80px) scale(0) rotate(360deg); opacity: 0; }
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+/* Level badge glow */
+@keyframes level-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(255,184,0,0.4); }
+  50% { box-shadow: 0 0 24px rgba(255,184,0,0.9), 0 0 48px rgba(255,184,0,0.3); }
 }
 
-.App-link {
-    color: #61dafb;
+/* Path animation for roadmap */
+@keyframes path-flow {
+  0% { stroke-dashoffset: 1000; }
+  100% { stroke-dashoffset: 0; }
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+/* Town node bounce */
+@keyframes town-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
+
+/* Chart line draw */
+@keyframes chart-draw {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Gradient border animation */
+@keyframes gradient-border {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Hero background particles */
+@keyframes float-particle {
+  0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-10vh) translateX(100px) scale(1); opacity: 0; }
+}
+
+/* Nav active indicator */
+@keyframes nav-indicator {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Apply glow pulse to chatbot */
+.chatbot-orb {
+  animation: chatbot-orb 2s ease-in-out infinite;
+}
+
+/* Gradient border */
+.gradient-border {
+  background: linear-gradient(#0a0a0a, #0a0a0a) padding-box,
+              linear-gradient(135deg, #6C63FF, #00D4FF) border-box;
+  border: 1px solid transparent;
+}
+
+/* Recharts tooltip custom */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: rgba(17,17,17,0.95) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* Progress ring animation */
+.progress-ring-animate {
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Trading terminal */
+.terminal-bg {
+  background: radial-gradient(ellipse at 20% 50%, rgba(108,99,255,0.05) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(0,212,255,0.05) 0%, transparent 60%),
+              #0a0a0a;
+}
+
+/* Responsive chart containers */
+.chart-container {
+  width: 100%;
+  min-height: 200px;
+}
+
+/* Smooth page transitions */
+.page-enter { opacity: 0; transform: translateY(10px); }
+.page-enter-active { opacity: 1; transform: translateY(0); transition: all 300ms ease; }
+.page-exit { opacity: 1; transform: translateY(0); }
+.page-exit-active { opacity: 0; transform: translateY(-10px); transition: all 300ms ease; }
+
+/* Monaco Editor override */
+.monaco-container .margin { background: transparent !important; }
