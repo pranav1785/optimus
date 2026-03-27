@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import axios from 'axios';
@@ -11,10 +11,11 @@ const Portfolio = () => {
   const [resetting, setResetting] = useState(false);
   const [showReset, setShowReset] = useState(false);
 
-  const mockHistory = Array.from({ length: 30 }, (_, i) => ({
+  // Deterministic history — no Math.random() to avoid re-render flicker
+  const mockHistory = useMemo(() => Array.from({ length: 30 }, (_, i) => ({
     day: `Day ${i+1}`,
-    value: 100000 + Math.sin(i * 0.4) * 4000 + i * 200 + (Math.random() - 0.5) * 2000
-  }));
+    value: 100000 + Math.sin(i * 0.4) * 4000 + i * 200 + Math.sin(i * 1.7) * 800
+  })), []);
 
   useEffect(() => {
     const fetchTrades = async () => {
