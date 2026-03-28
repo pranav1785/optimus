@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useApp, API } from '../context/AppContext';
@@ -161,6 +161,7 @@ const TownNode = ({ town, position, progress, onClick }) => {
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ delay: town.id * 0.055, type: 'spring', stiffness: 200, damping: 16 }}
       onClick={() => !isLocked && onClick(town)}
+      data-testid={`town-node-${town.id}`}
       whileHover={!isLocked ? { scale: 1.12, zIndex: 30 } : {}}
       whileTap={!isLocked ? { scale: 0.92 } : {}}
     >
@@ -239,7 +240,7 @@ const TownNode = ({ town, position, progress, onClick }) => {
 };
 
 // ─── Town detail popup ───
-const TownPopup = ({ town, progress, onClose, onEnter }) => {
+const TownPopup = ({ town, progress, onClose }) => {
   const completedLessons = (progress?.completed_lessons || []).filter(id =>
     town.lessons?.some(l => l.id === id)
   );
@@ -247,16 +248,30 @@ const TownPopup = ({ town, progress, onClose, onEnter }) => {
   const status = progress?.status || 'locked';
 
   return (
-    <motion.div initial={{ opacity:0, scale:0.9, y:20 }} animate={{ opacity:1, scale:1, y:0 }}
-      exit={{ opacity:0, scale:0.9, y:20 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    // Outer wrapper: only fades in/out — no scale/translate on fixed inset-0
+    // so the click hit-area is always the full viewport, never misaligned
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 flex items-center justify-center p-4"
+      style={{ zIndex: 9999 }}
+      onClick={onClose}
+    >
+      {/* Backdrop — purely visual */}
       <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" style={{ pointerEvents:'none' }} />
-      <div className="relative w-full max-w-sm rounded-3xl p-6 overflow-hidden"
+
+      {/* Card — independently animated so transform doesn't affect the hit-area of the overlay */}
+      <motion.div
+        initial={{ scale:0.9, y:24, opacity:0 }}
+        animate={{ scale:1, y:0, opacity:1 }}
+        exit={{ scale:0.9, y:24, opacity:0 }}
+        transition={{ type:'spring', stiffness:300, damping:28 }}
+        className="relative w-full max-w-sm rounded-3xl p-6 overflow-hidden"
         style={{ background:'rgba(10,10,20,0.97)', border:`1px solid ${town.color}30`,
                  boxShadow:`0 0 60px ${town.color}18`, zIndex:1 }}
-        onClick={e => e.stopPropagation()}>
+        onClick={e => e.stopPropagation()}
+      >
         <div className="absolute inset-0 opacity-5"
-          style={{ background:`radial-gradient(circle at 50% 0%, ${town.color}, transparent 70%)` }} />
+          style={{ background:`radial-gradient(circle at 50% 0%, ${town.color}, transparent 70%)`, pointerEvents:'none' }} />
         <button onClick={onClose} className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-white/10 transition-all">
           <X size={16} className="text-white/50" />
         </button>
@@ -290,8 +305,8 @@ const TownPopup = ({ town, progress, onClose, onEnter }) => {
 
         <div className="grid grid-cols-3 gap-3 mb-5">
           {[
-            { label:'Lessons',   value:totalLessons,                                                   color:'#00D4FF' },
-            { label:'XP Reward', value:`+${town.xpReward}`,                                            color:'#FFB800' },
+            { label:'Lessons',   value:totalLessons,                                                        color:'#00D4FF' },
+            { label:'XP Reward', value:`+${town.xpReward}`,                                                 color:'#FFB800' },
             { label:'Completed', value:status==='completed'?'✓':`${completedLessons.length}/${totalLessons}`, color:'#00FF88' },
           ].map(s => (
             <div key={s.label} className="glass p-3 rounded-xl text-center">
@@ -320,16 +335,20 @@ const TownPopup = ({ town, progress, onClose, onEnter }) => {
             <Lock size={12} /> Complete the previous town to unlock this location
           </div>
         ) : (
-          <button onClick={(e) => { e.stopPropagation(); onEnter(town); }} data-testid={`enter-town-${town.id}`}
+          /* Use Link for guaranteed navigation — no event-bubbling or callback needed */
+          <Link
+            to={`/roadmap/${town.id}`}
+            data-testid={`enter-town-${town.id}`}
             className="w-full py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all hover:opacity-90"
-            style={{ background:`linear-gradient(135deg,${town.color},#00D4FF)` }}>
+            style={{ background:`linear-gradient(135deg,${town.color},#00D4FF)` }}
+          >
             {status==='completed' ? <><Award size={16} /> Review Town</> :
              status==='in_progress' ? <><Zap size={16} /> Continue Journey</> :
              <><Rocket size={16} /> Enter Town</>}
             <ChevronRight size={16} />
-          </button>
+          </Link>
         )}
-      </div>
+      </motion.div>
     </motion.div>
   );
 };
@@ -382,7 +401,6 @@ const SideQuestsPanel = ({ completedTowns, onClose }) => (
 // ─── Main Roadmap ───
 const Roadmap = () => {
   const { user } = useApp();
-  const navigate = useNavigate();
   const [progress, setProgress]       = useState([]);
   const [loading, setLoading]         = useState(true);
   const [selectedTown, setSelectedTown] = useState(null);
@@ -401,11 +419,6 @@ const Roadmap = () => {
   const handleTownClick = (town) => {
     const pos = TOWN_POSITIONS.find(p => p.id === town.id);
     setSelectedTown({ town, position: pos });
-  };
-
-  const handleEnterTown = (town) => {
-    setSelectedTown(null);
-    navigate(`/roadmap/${town.id}`);
   };
 
   return (
@@ -621,7 +634,7 @@ const Roadmap = () => {
         {selectedTown && (
           <TownPopup town={selectedTown.town}
             progress={progress.find(p => p.town_id === selectedTown.town.id)}
-            onClose={() => setSelectedTown(null)} onEnter={handleEnterTown} />
+            onClose={() => setSelectedTown(null)} />
         )}
       </AnimatePresence>
 
