@@ -102,11 +102,12 @@ const TradingTerminal = () => {
     <div className="min-h-screen" style={{ background: isDark ? '#0a0a0a' : '#F8F9FF' }}>
       <MobileWarning isDark={isDark} />
 
-      <div className="hidden md:flex h-screen flex-col overflow-hidden">
+      <div className="hidden md:flex h-screen flex-col" style={{ overflow: 'visible' }}>
         {/* Top bar */}
-        <div className={`flex items-center gap-4 px-4 py-3 border-b ${isDark ? 'border-white/10 bg-black/40' : 'border-black/5 bg-white/50'} backdrop-blur-xl flex-shrink-0`}>
+        <div className={`flex items-center gap-4 px-4 py-3 border-b ${isDark ? 'border-white/10 bg-black/40' : 'border-black/5 bg-white/50'} backdrop-blur-xl flex-shrink-0`}
+          style={{ position: 'relative', zIndex: 100 }}>
           {/* Stock selector */}
-          <div className="relative">
+          <div className="relative" style={{ zIndex: 200 }}>
             <button onClick={() => setShowSearch(!showSearch)} data-testid="stock-selector"
               className={`flex items-center gap-2 px-4 py-2 rounded-xl glass glass-hover`}>
               <span className="font-bold text-sm" style={{ color: isDark ? '#fff' : '#0F172A' }}>
@@ -115,7 +116,8 @@ const TradingTerminal = () => {
               <ChevronDown size={14} className="text-white/40" />
             </button>
             {showSearch && (
-              <div className={`absolute top-full left-0 mt-2 w-72 rounded-2xl shadow-2xl z-50 overflow-hidden ${isDark ? 'bg-[#1a1a1a] border border-white/10' : 'bg-white border border-black/5'}`}>
+              <div className={`absolute top-full left-0 mt-2 w-72 rounded-2xl shadow-2xl overflow-hidden ${isDark ? 'bg-[#1a1a1a] border border-white/10' : 'bg-white border border-black/5'}`}
+                style={{ zIndex: 9999 }}>
                 <div className="p-3">
                   <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5">
                     <Search size={14} className="text-white/40" />
@@ -134,7 +136,7 @@ const TradingTerminal = () => {
                         <p className="text-xs" style={{ color: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}>{s.name}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-medium" style={{ color: isDark ? '#fff' : '#0F172A' }}>₹{s.price.toLocaleString('en-IN')}</p>
+                        <p className="text-sm font-medium" style={{ color: isDark ? '#fff' : '#0F172A' }}>₹{(s.live_price || s.price).toLocaleString('en-IN')}</p>
                         <p className={`text-xs ${s.change_pct >= 0 ? 'text-[#00FF88]' : 'text-[#FF4444]'}`}>{s.change_pct >= 0 ? '+' : ''}{s.change_pct}%</p>
                       </div>
                     </button>
@@ -179,7 +181,7 @@ const TradingTerminal = () => {
           </div>
         </div>
 
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1" style={{ overflow: 'hidden' }}>
           {/* Chart area */}
           <div className="flex-1 flex flex-col p-4 overflow-hidden">
             {/* Price chart */}
@@ -206,15 +208,30 @@ const TradingTerminal = () => {
                   {showMA30 && <Area type="monotone" dataKey="ma30" stroke="#00D4FF" strokeWidth={1.5} fill="none" dot={false} connectNulls />}
                 </ComposedChart>
               </ResponsiveContainer>
-              <ResponsiveContainer width="100%" height="25%">
-                <BarChart data={chartData.slice(-50)} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
-                  <Bar dataKey="volume" fill="rgba(108,99,255,0.25)" radius={[1, 1, 0, 0]} />
-                  <XAxis dataKey="time" hide />
-                  <YAxis hide />
-                  <Tooltip contentStyle={{ background: 'rgba(17,17,17,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 11 }}
-                    formatter={v => [v?.toLocaleString(), 'Volume']} />
-                </BarChart>
-              </ResponsiveContainer>
+              {/* Volume chart */}
+              <div style={{ height: '25%', minHeight: 80 }} className="relative">
+                <div className="absolute top-1 left-2 text-[10px] font-semibold z-10 flex items-center gap-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                  <InfoButton term="Volume" />
+                  <span>VOLUME</span>
+                </div>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData.slice(-60)} margin={{ top: 14, right: 8, left: 8, bottom: 0 }}>
+                    <YAxis hide />
+                    <XAxis dataKey="time" hide />
+                    <Tooltip
+                      contentStyle={{ background: 'rgba(17,17,17,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 11 }}
+                      formatter={v => [typeof v === 'number' ? v.toLocaleString('en-IN') : v, 'Volume']}
+                      labelFormatter={label => `Date: ${label}`}
+                    />
+                    <Bar dataKey="volume" name="Volume" radius={[1, 1, 0, 0]}
+                      shape={({ x, y, width, height, value, index }) => {
+                        const d = chartData.slice(-60)[index];
+                        const color = d?.close >= d?.open ? 'rgba(0,255,136,0.4)' : 'rgba(255,68,68,0.4)';
+                        return <rect x={x} y={y} width={Math.max(width, 1)} height={height} fill={color} rx={1} />;
+                      }} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
 

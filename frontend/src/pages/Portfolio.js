@@ -1,15 +1,26 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { PieChart, Pie, Cell, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { PieChart, Pie, Cell, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar } from 'recharts';
 import axios from 'axios';
 import { useApp, API } from '../context/AppContext';
-import { TrendingUp, TrendingDown, RefreshCw, AlertCircle, Clock, BarChart2 } from 'lucide-react';
+import { TrendingUp, TrendingDown, RefreshCw, AlertCircle, Clock, BarChart2, AlertTriangle, ChevronRight } from 'lucide-react';
+import InfoButton from '../components/InfoButton';
+
+const CRASH_OPTIONS = [
+  { id: '2020_covid_crash', label: '2020 COVID Crash', drop: -40, color: '#FF4444' },
+  { id: '2008_financial_crisis', label: '2008 Financial Crisis', drop: -65, color: '#FF4444' },
+  { id: '1992_harshad_mehta', label: '1992 Harshad Mehta Scam', drop: -40, color: '#FFB800' },
+];
 
 const Portfolio = () => {
   const { isDark, portfolio, refreshPortfolio } = useApp();
   const [trades, setTrades] = useState([]);
   const [resetting, setResetting] = useState(false);
   const [showReset, setShowReset] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [selectedCrash, setSelectedCrash] = useState('2020_covid_crash');
+  const [crashResult, setCrashResult] = useState(null);
+  const [simulating, setSimulating] = useState(false);
 
   // Deterministic history — no Math.random() to avoid re-render flicker
   const mockHistory = useMemo(() => Array.from({ length: 30 }, (_, i) => ({
@@ -39,6 +50,16 @@ const Portfolio = () => {
     setResetting(false);
   };
 
+  const simulateCrash = async () => {
+    setSimulating(true);
+    setCrashResult(null);
+    try {
+      const { data } = await axios.post(`${API}/market/crash-simulation`, { event_id: selectedCrash });
+      setCrashResult(data);
+    } catch (e) {}
+    setSimulating(false);
+  };
+
   const holdings = portfolio.holdings || [];
   const pnlPositive = (portfolio.total_pnl || 0) >= 0;
   const pieData = [
@@ -52,17 +73,88 @@ const Portfolio = () => {
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-6">
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-black mb-1" style={{ fontFamily: 'Outfit, sans-serif', color: isDark ? '#fff' : '#0F172A' }}>Portfolio</h1>
           <p style={{ color: isDark ? 'rgba(255,255,255,0.5)' : '#64748b' }}>Your paper trading holdings and performance</p>
         </div>
-        <button onClick={() => setShowReset(true)} data-testid="reset-portfolio-btn"
-          className="flex items-center gap-2 px-4 py-2 rounded-xl glass glass-hover text-sm transition-all text-[#FF4444]">
-          <RefreshCw size={14} /> Reset Portfolio
-        </button>
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1 p-1 rounded-xl glass">
+            {[{ id: 'overview', label: 'Overview' }, { id: 'crash', label: '⚠ Crash Sim' }].map(t => (
+              <button key={t.id} onClick={() => setActiveTab(t.id)} data-testid={`portfolio-tab-${t.id}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${activeTab === t.id ? 'bg-[#6C63FF] text-white' : 'text-white/50 hover:text-white'}`}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+          <button onClick={() => setShowReset(true)} data-testid="reset-portfolio-btn"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl glass glass-hover text-sm transition-all text-[#FF4444]">
+            <RefreshCw size={14} /> Reset
+          </button>
+        </div>
       </motion.div>
 
+      {activeTab === 'crash' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl">
+          <div className="glass p-5 rounded-2xl mb-5">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-[#FF4444]/20 flex items-center justify-center">
+                <AlertTriangle size={18} className="text-[#FF4444]" />
+              </div>
+              <div>
+                <h2 className="font-bold" style={{ color: isDark ? '#fff' : '#0F172A' }}>Market Crash Simulator</h2>
+                <p className="text-xs" style={{ color: isDark ? 'rgba(255,255,255,0.45)' : '#94a3b8' }}>See how your portfolio holds up in historical crashes</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+              {CRASH_OPTIONS.map(c => (
+                <button key={c.id} onClick={() => setSelectedCrash(c.id)} data-testid={`crash-${c.id}`}
+                  className={`p-3 rounded-xl text-left transition-all border glass ${selectedCrash === c.id ? 'border-[#FF4444]/40 bg-[#FF4444]/8' : 'border-white/5 hover:border-white/10'}`}>
+                  <p className="font-semibold text-xs" style={{ color: isDark ? '#fff' : '#0F172A' }}>{c.label}</p>
+                  <p className="text-xl font-black mt-1" style={{ color: c.color, fontFamily: 'Outfit, sans-serif' }}>{c.drop}%</p>
+                </button>
+              ))}
+            </div>
+            <motion.button onClick={simulateCrash} disabled={simulating}
+              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              data-testid="run-crash-sim"
+              className="w-full py-3 rounded-xl font-bold text-white disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{ background: 'linear-gradient(135deg, #FF4444, #FF8800)' }}>
+              <AlertTriangle size={16} />
+              {simulating ? 'Simulating...' : 'Simulate Crash on My Portfolio'}
+            </motion.button>
+          </div>
+          {crashResult && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass p-5 rounded-2xl border border-[#FF4444]/15">
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {[
+                  { label: 'Before Crash', value: `₹${(crashResult.portfolio_impact?.total_before || 100000).toLocaleString('en-IN', { maximumFractionDigits: 0 })}` },
+                  { label: 'After Crash', value: `₹${(crashResult.portfolio_impact?.total_after || 100000).toLocaleString('en-IN', { maximumFractionDigits: 0 })}` },
+                ].map(s => (
+                  <div key={s.label} className="glass p-3 rounded-xl text-center">
+                    <p className="text-xs text-white/40 mb-1">{s.label}</p>
+                    <p className="font-bold text-sm" style={{ color: isDark ? '#fff' : '#0F172A' }}>{s.value}</p>
+                  </div>
+                ))}
+              </div>
+              {(crashResult.portfolio_impact?.total_invested || 0) === 0 ? (
+                <div className="p-3 rounded-xl bg-[#00D4FF]/10 text-center">
+                  <p className="text-sm text-[#00D4FF]">You hold only cash — cash doesn't fall in market crashes!</p>
+                </div>
+              ) : (
+                <div className="p-3 rounded-xl bg-[#FF4444]/10 text-center">
+                  <p className="text-sm font-bold text-[#FF4444]">
+                    Simulated Loss: ₹{Math.abs(crashResult.portfolio_impact?.total_loss || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                    {' '}({(crashResult.portfolio_impact?.total_loss_pct || 0).toFixed(1)}%)
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </motion.div>
+      )}
+
+      {activeTab === 'overview' && (<>
       {/* Summary cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
@@ -237,6 +329,7 @@ const Portfolio = () => {
           </motion.div>
         </div>
       )}
+      </>)}
     </div>
   );
 };

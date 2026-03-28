@@ -9,14 +9,14 @@ import {
 
 const navItems = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/roadmap', icon: Map, label: 'Roadmap' },
+  { path: '/roadmap', icon: Map, label: 'Learn' },
   { path: '/trade', icon: TrendingUp, label: 'Trade' },
   { path: '/portfolio', icon: PieChart, label: 'Portfolio' },
   { path: '/analysis', icon: BarChart2, label: 'Analysis' },
   { path: '/algo-lab', icon: FlaskConical, label: 'Algo Lab' },
   { path: '/community', icon: Users, label: 'Community' },
   { path: '/arena', icon: Trophy, label: 'Arena' },
-  { path: '/learn', icon: BookOpen, label: 'Learn' },
+  { path: '/learn', icon: BookOpen, label: 'Blogs' },
   { path: '/profile', icon: User, label: 'Profile' },
 ];
 

@@ -4,10 +4,12 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
-import os, uuid, random, hashlib, logging, numpy as np
+import os, uuid, random, hashlib, logging, numpy as np, asyncio
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from dotenv import load_dotenv
 from emergentintegrations.llm.chat import LlmChat, UserMessage
+import yfinance as yf
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -47,6 +49,109 @@ STOCKS_DATA = [
     {"symbol": "ADANIPORTS", "name": "Adani Ports & SEZ", "sector": "Logistics", "price": 1234.30, "sigma": 0.022},
 ]
 
+# ============ YFINANCE REAL-PRICE CACHE ============
+_price_cache: dict = {}   # {symbol: {price, change_pct, change, high_52w, low_52w, volume, ts}}
+_chart_cache: dict = {}   # {(symbol, period): {data, ts}}
+_executor = ThreadPoolExecutor(max_workers=4)
+PRICE_TTL = 300    # 5-minute cache for live prices
+CHART_TTL = 3600   # 1-hour cache for historical chart data
+
+NSE_SUFFIX = ".NS"
+_SYMBOL_MAP = {s["symbol"]: s["symbol"] + NSE_SUFFIX for s in STOCKS_DATA if True}
+
+def _yf_fetch_price(symbol: str) -> dict | None:
+    """Run in thread pool — yfinance is blocking."""
+    try:
+        ticker = yf.Ticker(_SYMBOL_MAP.get(symbol, symbol + NSE_SUFFIX))
+        info = ticker.fast_info
+        price = float(info.last_price or 0)
+        prev = float(info.previous_close or price)
+        if price <= 0:
+            return None
+        chg = round(price - prev, 2)
+        chg_pct = round((chg / prev) * 100, 2) if prev else 0
+        return {
+            "price": round(price, 2),
+            "change": chg,
+            "change_pct": chg_pct,
+            "high_52w": round(float(info.year_high or price * 1.2), 2),
+            "low_52w": round(float(info.year_low or price * 0.8), 2),
+            "volume": int(info.three_month_average_volume or 1000000),
+            "market_cap": float(info.market_cap or 0),
+        }
+    except Exception as e:
+        logger.warning(f"yfinance price fetch failed for {symbol}: {e}")
+        return None
+
+def _yf_fetch_chart(symbol: str, period: str) -> list | None:
+    """Fetch OHLCV history from yfinance. Returns list of dicts."""
+    period_map = {"1M": "1mo", "3M": "3mo", "1Y": "1y", "1D": "1d", "1W": "5d"}
+    yf_period = period_map.get(period, "1y")
+    interval = "15m" if period == "1D" else "1d"
+    try:
+        ticker = yf.Ticker(_SYMBOL_MAP.get(symbol, symbol + NSE_SUFFIX))
+        hist = ticker.history(period=yf_period, interval=interval)
+        if hist.empty:
+            return None
+        result = []
+        for ts, row in hist.iterrows():
+            date_str = ts.strftime("%Y-%m-%d") if interval == "1d" else ts.strftime("%Y-%m-%d %H:%M")
+            result.append({
+                "time": date_str,
+                "open": round(float(row["Open"]), 2),
+                "high": round(float(row["High"]), 2),
+                "low": round(float(row["Low"]), 2),
+                "close": round(float(row["Close"]), 2),
+                "volume": int(row["Volume"]),
+            })
+        return result if result else None
+    except Exception as e:
+        logger.warning(f"yfinance chart fetch failed for {symbol}: {e}")
+        return None
+
+async def get_live_price(symbol: str) -> dict:
+    """Get real NSE price. Returns merged dict with live+fundamental data."""
+    now = datetime.now(timezone.utc).timestamp()
+    cached = _price_cache.get(symbol)
+    if cached and (now - cached["ts"]) < PRICE_TTL:
+        return cached
+
+    loop = asyncio.get_event_loop()
+    live = await loop.run_in_executor(_executor, _yf_fetch_price, symbol)
+
+    static = get_stock(symbol) or STOCKS_DATA[0]
+    if live:
+        merged = {**static, **live, "ts": now}
+    else:
+        # Fallback to static data
+        merged = {**static, "ts": now - PRICE_TTL + 60}  # retry after 1 min
+    _price_cache[symbol] = merged
+    return merged
+
+async def get_real_chart(symbol: str, period: str) -> list:
+    """Get real OHLCV chart. Falls back to mock generation."""
+    cache_key = (symbol, period)
+    now = datetime.now(timezone.utc).timestamp()
+    cached = _chart_cache.get(cache_key)
+    if cached and (now - cached["ts"]) < CHART_TTL:
+        return cached["data"]
+
+    loop = asyncio.get_event_loop()
+    data = await loop.run_in_executor(_executor, _yf_fetch_chart, symbol, period)
+
+    if data and len(data) > 5:
+        _chart_cache[cache_key] = {"data": data, "ts": now}
+        return data
+
+    # Fallback to mock
+    stock = get_stock(symbol) or STOCKS_DATA[0]
+    period_days = {"1D": 1, "1W": 7, "1M": 30, "3M": 90, "1Y": 365}.get(period, 365)
+    mock = generate_ohlcv(symbol, stock["price"], period_days, stock.get("sigma", 0.015))
+    _chart_cache[cache_key] = {"data": mock, "ts": now - CHART_TTL + 300}  # retry in 5 min
+    return mock
+
+
+# Seed static fundamental data for each stock (deterministic)
 for s in STOCKS_DATA:
     rng = random.Random(int(hashlib.md5(s["symbol"].encode()).hexdigest(), 16) % (2**31))
     s["pe"] = round(rng.uniform(15, 45), 1)
@@ -387,9 +492,22 @@ async def update_xp(update: XPUpdate):
 @api_router.get("/market/stocks")
 async def get_stocks():
     result = []
-    for s in STOCKS_DATA:
-        live_price = round(s["price"] * (1 + random.uniform(-0.005, 0.005)), 2)
-        result.append({**s, "live_price": live_price, "exchange": "NSE"})
+    # Fetch all prices concurrently
+    import asyncio
+    prices = await asyncio.gather(*[get_live_price(s["symbol"]) for s in STOCKS_DATA], return_exceptions=True)
+    for s, p in zip(STOCKS_DATA, prices):
+        live = p if isinstance(p, dict) else s
+        result.append({
+            **s,
+            "price": live.get("price", s["price"]),
+            "change": live.get("change", s["change"]),
+            "change_pct": live.get("change_pct", s["change_pct"]),
+            "high_52w": live.get("high_52w", s["high_52w"]),
+            "low_52w": live.get("low_52w", s["low_52w"]),
+            "volume": live.get("volume", s["volume"]),
+            "live_price": live.get("price", s["price"]),
+            "exchange": "NSE",
+        })
     return result
 
 @api_router.get("/market/stocks/{symbol}")
@@ -397,17 +515,25 @@ async def get_stock_detail(symbol: str):
     stock = get_stock(symbol)
     if not stock:
         raise HTTPException(status_code=404, detail="Stock not found")
-    return {**stock, "exchange": "NSE"}
+    live = await get_live_price(symbol)
+    return {
+        **stock,
+        "price": live.get("price", stock["price"]),
+        "change": live.get("change", stock["change"]),
+        "change_pct": live.get("change_pct", stock["change_pct"]),
+        "high_52w": live.get("high_52w", stock["high_52w"]),
+        "low_52w": live.get("low_52w", stock["low_52w"]),
+        "volume": live.get("volume", stock["volume"]),
+        "exchange": "NSE",
+    }
 
 @api_router.get("/market/stocks/{symbol}/chart")
 async def get_stock_chart(symbol: str, period: str = "1Y"):
     stock = get_stock(symbol)
     if not stock:
         raise HTTPException(status_code=404, detail="Stock not found")
-    period_map = {"1D": 1, "1W": 7, "1M": 30, "3M": 90, "1Y": 365}
-    days = period_map.get(period, 365)
-    ohlcv = generate_ohlcv(symbol, stock["price"], days, stock.get("sigma", 0.015))
-    return {"symbol": symbol, "period": period, "data": ohlcv}
+    data = await get_real_chart(symbol, period)
+    return {"symbol": symbol, "period": period, "data": data, "source": "NSE/Yahoo Finance"}
 
 @api_router.get("/market/crypto")
 async def get_crypto():
@@ -472,7 +598,10 @@ async def get_portfolio():
     for h in holdings:
         stock = get_stock(h["symbol"])
         if stock:
-            cp = round(stock["price"] * (1 + random.uniform(-0.005, 0.005)), 2)
+            # Use live price from cache (non-blocking, returns cached value)
+            cached = _price_cache.get(h["symbol"])
+            cp = cached["price"] if cached else stock["price"]
+            cp = round(cp * (1 + random.uniform(-0.001, 0.001)), 2)  # tiny spread
             invested = h["avg_buy_price"] * h["quantity"]
             current_value = cp * h["quantity"]
             pnl = current_value - invested
@@ -830,25 +959,46 @@ async def get_stock_analysis(symbol: str):
     stock = get_stock(symbol)
     if not stock:
         raise HTTPException(status_code=404, detail="Stock not found")
-    revenue = random.uniform(50000, 500000)
+    live = await get_live_price(symbol)
+    current_price = live.get("price", stock["price"])
+    # Use live market cap if available, else fall back to static calculation
+    mkt_cap = live.get("market_cap", 0) or (stock["market_cap"])
+    rng = random.Random(int(hashlib.md5(symbol.encode()).hexdigest(), 16) % (2**31))
+    revenue = rng.uniform(50000, 500000)
     return {
         "symbol": symbol, "name": stock["name"], "sector": stock["sector"],
-        "current_price": stock["price"], "change_pct": stock["change_pct"],
-        "pe_ratio": stock["pe"], "pb_ratio": round(stock["price"] / stock["book_value"], 2),
-        "eps": stock["eps"], "book_value": stock["book_value"], "dividend_yield": stock["dividend_yield"],
+        "current_price": current_price,
+        "change_pct": live.get("change_pct", stock["change_pct"]),
+        "change": live.get("change", stock["change"]),
+        "pe_ratio": stock["pe"],
+        "pb_ratio": round(current_price / stock["book_value"], 2) if stock["book_value"] else stock["pe"],
+        "eps": round(current_price / stock["pe"], 2) if stock["pe"] else stock["eps"],
+        "book_value": stock["book_value"], "dividend_yield": stock["dividend_yield"],
         "roe": stock["roe"], "debt_equity": stock["debt_equity"],
-        "market_cap_cr": round(stock["market_cap"] / 1e7, 0), "high_52w": stock["high_52w"], "low_52w": stock["low_52w"],
-        "income_statement": {"revenue": round(revenue, 0), "gross_profit": round(revenue * 0.45, 0),
-                             "ebitda": round(revenue * 0.25, 0), "net_profit": round(revenue * 0.15, 0)},
-        "balance_sheet": {"total_assets": round(revenue * 2.5, 0), "total_equity": round(revenue * 1.2, 0),
-                          "total_debt": round(revenue * 0.8, 0), "cash": round(revenue * 0.3, 0)},
-        "analyst_consensus": {"buy": random.randint(8, 18), "hold": random.randint(3, 8), "sell": random.randint(0, 3),
-                              "target_price": round(stock["price"] * random.uniform(1.1, 1.4), 2)},
+        "market_cap_cr": round(mkt_cap / 1e7, 0) if mkt_cap > 0 else round(stock["market_cap"] / 1e7, 0),
+        "high_52w": live.get("high_52w", stock["high_52w"]),
+        "low_52w": live.get("low_52w", stock["low_52w"]),
+        "volume": live.get("volume", stock["volume"]),
+        "income_statement": {
+            "revenue": round(revenue, 0), "gross_profit": round(revenue * 0.45, 0),
+            "ebitda": round(revenue * 0.25, 0), "net_profit": round(revenue * 0.15, 0),
+        },
+        "balance_sheet": {
+            "total_assets": round(revenue * 2.5, 0), "total_equity": round(revenue * 1.2, 0),
+            "total_debt": round(revenue * 0.8, 0), "cash": round(revenue * 0.3, 0),
+        },
+        "analyst_consensus": {
+            "buy": rng.randint(8, 18), "hold": rng.randint(3, 8), "sell": rng.randint(0, 3),
+            "target_price": round(current_price * rng.uniform(1.1, 1.4), 2),
+        },
         "news": [
-            {"headline": f"{stock['name']} reports {random.randint(10, 30)}% YoY growth in Q3 FY26", "source": "Economic Times", "time": "2h ago", "sentiment": "positive"},
-            {"headline": f"Analysts upgrade {symbol} to Buy, target ₹{round(stock['price'] * 1.25, 0)}", "source": "Moneycontrol", "time": "1d ago", "sentiment": "positive"},
-            {"headline": f"{stock['sector']} sector faces headwinds amid global uncertainty", "source": "Mint", "time": "2d ago", "sentiment": "neutral"},
-        ]
+            {"headline": f"{stock['name']} reports {rng.randint(10, 30)}% YoY growth in Q3 FY26",
+             "source": "Economic Times", "time": "2h ago", "sentiment": "positive"},
+            {"headline": f"Analysts upgrade {symbol} to Buy, target ₹{round(current_price * 1.25, 0)}",
+             "source": "Moneycontrol", "time": "1d ago", "sentiment": "positive"},
+            {"headline": f"{stock['sector']} sector faces headwinds amid global uncertainty",
+             "source": "Mint", "time": "2d ago", "sentiment": "neutral"},
+        ],
     }
 
 app.include_router(api_router)

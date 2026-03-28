@@ -5,10 +5,25 @@ import axios from 'axios';
 import { useApp, API } from '../context/AppContext';
 import { TOWNS, INVESTOR_QUOTES } from '../data/mockData';
 import InfoButton from '../components/InfoButton';
-import { ChevronLeft, ChevronDown, ChevronUp, CheckCircle2, Lock, Star, Zap, BookOpen, Trophy, ChevronRight, X, Award } from 'lucide-react';
+import { ChevronLeft, ChevronDown, ChevronUp, CheckCircle2, Lock, Star, Zap, BookOpen, Trophy, ChevronRight, X, Award, Rocket } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
 const TOWN_ICON_MAP = { 'Coins': 'Coins', 'TrendingUp': 'TrendingUp', 'BarChart2': 'BarChart2', 'FileText': 'FileText', 'Activity': 'Activity', 'PieChart': 'PieChart', 'Zap': 'Zap', 'GitBranch': 'GitBranch', 'Gem': 'Gem', 'Cpu': 'Cpu', 'Layout': 'LayoutGrid', 'Code': 'Code2' };
+
+const TRY_OUT_ACTIONS = {
+  1: { label: 'Open the Trading Terminal', link: '/trade', icon: 'TrendingUp', desc: "You've learned about money — now explore live NSE stock prices on our paper trading desk." },
+  2: { label: 'Browse Live Stock Prices', link: '/trade', icon: 'BarChart2', desc: 'See the stocks you just learned about quoted live from NSE. No real money involved.' },
+  3: { label: 'Execute Your First Paper Trade', link: '/trade', icon: 'Zap', desc: "Use your virtual ₹1,00,000 to buy your first stock. Put equity trading theory into action!" },
+  4: { label: 'Analyze a Real Company', link: '/analysis', icon: 'FileText', desc: 'Use the Fundamental Analysis page to check P/E, ROE, and EPS of any NSE-listed company.' },
+  5: { label: 'Read Technical Charts', link: '/analysis', icon: 'Activity', desc: 'Apply RSI, MACD & Bollinger Bands on live charts. Switch to the Technical tab.' },
+  6: { label: 'Check Your Portfolio', link: '/portfolio', icon: 'PieChart', desc: 'View your paper portfolio allocation and see how your holdings are performing.' },
+  7: { label: 'Run a Strategy Backtest', link: '/algo-lab', icon: 'FlaskConical', desc: 'Test a pre-built futures/momentum strategy on real historical data in the Algo Lab.' },
+  8: { label: 'Post About Options in Community', link: '/community', icon: 'Users', desc: 'Share what you learned about Calls and Puts — teach others & earn +25 XP.' },
+  9: { label: 'Join a Trading Competition', link: '/arena', icon: 'Trophy', desc: 'Test your commodities and macro knowledge in a live trading tournament.' },
+  10: { label: 'Discuss Crypto Trends', link: '/community', icon: 'TrendingUp', desc: 'Share your view on crypto in the community feed and get peer feedback.' },
+  11: { label: 'Optimize Your Portfolio', link: '/portfolio', icon: 'LayoutGrid', desc: 'Check your portfolio allocation and apply the construction principles you just learned.' },
+  12: { label: 'Build Your First Algo Strategy', link: '/algo-lab', icon: 'Code2', desc: 'Apply advanced strategies in the Algo Lab — you have all the knowledge now!' },
+};
 
 const TownDetail = () => {
   const { townId } = useParams();
@@ -44,7 +59,9 @@ const TownDetail = () => {
 
   const iconName = TOWN_ICON_MAP[town.icon] || 'Star';
   const TownIcon = LucideIcons[iconName] || LucideIcons.Star;
-  const completedLessons = progress?.completed_lessons || [];
+  const completedLessons = (progress?.completed_lessons || []).filter(id =>
+    town.lessons.some(l => l.id === id)
+  );
   const isLocked = progress?.status === 'locked';
   const isCompleted = progress?.status === 'completed';
   const canTakeQuiz = completedLessons.length >= town.lessons.length && !isCompleted;
@@ -217,6 +234,34 @@ const TownDetail = () => {
               </motion.div>
             );
           })}
+
+          {/* Try-Out Checkpoint — shows when all lessons are done */}
+          {canTakeQuiz && !isCompleted && (() => {
+            const action = TRY_OUT_ACTIONS[town.id];
+            const ActionIcon = LucideIcons[action?.icon] || LucideIcons.Rocket;
+            return action ? (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                className="mt-4 p-5 rounded-2xl border-2 relative overflow-hidden"
+                style={{ borderColor: `${town.color}40`, background: `${town.color}08` }}>
+                <div className="absolute top-0 right-0 w-24 h-24 opacity-5 flex items-end justify-end">
+                  <ActionIcon size={96} />
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Rocket size={14} style={{ color: town.color }} />
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: town.color }}>
+                    Side Quest Unlocked
+                  </span>
+                </div>
+                <p className="font-bold mb-1" style={{ color: isDark ? '#fff' : '#0F172A' }}>{action.label}</p>
+                <p className="text-sm mb-4" style={{ color: isDark ? 'rgba(255,255,255,0.5)' : '#64748b' }}>{action.desc}</p>
+                <Link to={action.link} data-testid={`tryout-link-town-${town.id}`}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm text-white transition-all hover:opacity-90"
+                  style={{ background: `linear-gradient(135deg, ${town.color}, #00D4FF)` }}>
+                  <ActionIcon size={14} /> Try it Out <ChevronRight size={14} />
+                </Link>
+              </motion.div>
+            ) : null;
+          })()}
 
           {/* Quiz Section */}
           <div className="glass p-5 rounded-2xl mt-4">

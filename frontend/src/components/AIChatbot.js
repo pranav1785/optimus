@@ -5,6 +5,67 @@ import { useApp, API } from '../context/AppContext';
 import { useLocation } from 'react-router-dom';
 import { X, Send, Trash2, Zap, Bot } from 'lucide-react';
 
+// Simple inline markdown renderer
+const renderMarkdown = (text, isDark) => {
+  if (!text) return null;
+  const lines = text.split('\n');
+  const result = [];
+  let listBuffer = [];
+
+  const flushList = () => {
+    if (listBuffer.length > 0) {
+      result.push(
+        <ul key={`list-${result.length}`} className="list-disc pl-4 space-y-0.5 my-1.5">
+          {listBuffer.map((item, i) => (
+            <li key={i} className="text-sm leading-relaxed">{parseInline(item, isDark)}</li>
+          ))}
+        </ul>
+      );
+      listBuffer = [];
+    }
+  };
+
+  const parseInline = (line, isDark) => {
+    const parts = line.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+    return parts.map((p, i) => {
+      if (p.startsWith('**') && p.endsWith('**'))
+        return <strong key={i} className="font-semibold" style={{ color: isDark ? '#fff' : '#1e293b' }}>{p.slice(2, -2)}</strong>;
+      if (p.startsWith('`') && p.endsWith('`'))
+        return <code key={i} className="px-1 py-0.5 rounded text-[#00D4FF] bg-white/5 text-xs font-mono">{p.slice(1, -1)}</code>;
+      return p;
+    });
+  };
+
+  lines.forEach((line, i) => {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('# ') || trimmed.startsWith('## ') || trimmed.startsWith('### ')) {
+      flushList();
+      const lvl = trimmed.startsWith('### ') ? 3 : trimmed.startsWith('## ') ? 2 : 1;
+      const txt = trimmed.replace(/^#{1,3} /, '');
+      result.push(
+        <p key={i} className={`font-bold mt-2 mb-0.5 ${lvl === 1 ? 'text-[#6C63FF]' : 'text-sm'}`}
+          style={{ color: lvl === 1 ? '#6C63FF' : isDark ? 'rgba(255,255,255,0.9)' : '#334155' }}>
+          {txt}
+        </p>
+      );
+    } else if (trimmed.startsWith('- ') || trimmed.startsWith('• ') || trimmed.startsWith('* ')) {
+      listBuffer.push(trimmed.slice(2));
+    } else if (/^\d+\.\s/.test(trimmed)) {
+      listBuffer.push(trimmed.replace(/^\d+\.\s/, ''));
+    } else if (trimmed === '') {
+      flushList();
+      if (result.length > 0) result.push(<div key={i} className="h-1" />);
+    } else {
+      flushList();
+      result.push(
+        <p key={i} className="text-sm leading-relaxed">{parseInline(trimmed, isDark)}</p>
+      );
+    }
+  });
+  flushList();
+  return result.length > 0 ? result : <p className="text-sm leading-relaxed">{parseInline(text, isDark)}</p>;
+};
+
 const AIChatbot = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -72,6 +133,17 @@ const AIChatbot = () => {
 
   return (
     <>
+      {/* Click-outside backdrop */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40"
+            onClick={() => setOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Floating Orb */}
       <motion.button
         onClick={() => setOpen(o => !o)}
@@ -137,7 +209,7 @@ const AIChatbot = () => {
                       ? 'chat-user text-white'
                       : `chat-bot ${isDark ? 'text-white/90' : 'text-[#0F172A]'}`
                   }`}>
-                    {msg.text}
+                    {msg.role === 'bot' ? renderMarkdown(msg.text, isDark) : msg.text}
                   </div>
                 </motion.div>
               ))}

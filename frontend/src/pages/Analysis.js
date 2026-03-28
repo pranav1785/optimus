@@ -7,6 +7,7 @@ import {
 import axios from 'axios';
 import { useApp, API } from '../context/AppContext';
 import { Search, TrendingUp, TrendingDown, ChevronDown, BarChart2, FileText, Activity } from 'lucide-react';
+import InfoButton from '../components/InfoButton';
 
 const TIMEFRAMES = ['1M', '3M', '1Y'];
 
@@ -57,7 +58,7 @@ const RatioCard = ({ label, value, benchmark, unit = '', isDark }) => {
   const isGood = !isNaN(numVal) && !isNaN(numBench) ? numVal <= numBench : null;
   return (
     <div className="glass p-3 rounded-xl">
-      <p className="text-xs mb-1" style={{ color: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}>{label}</p>
+      <div className="text-xs mb-1 flex items-center gap-1" style={{ color: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}>{label}</div>
       <p className="text-base font-bold" style={{ color: isDark ? '#fff' : '#0F172A' }}>{value}{unit}</p>
       {benchmark && (
         <p className="text-[10px] mt-0.5" style={{ color: isGood ? '#00FF88' : '#FFB800' }}>
@@ -210,7 +211,7 @@ const Analysis = () => {
           {/* Price + BB chart */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass p-5 rounded-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold" style={{ color: isDark ? '#fff' : '#0F172A' }}>Price + Bollinger Bands</h3>
+              <h3 className="font-bold flex items-center gap-1.5" style={{ color: isDark ? '#fff' : '#0F172A' }}>Price + Bollinger Bands <InfoButton term="Bollinger Bands" /></h3>
               <div className="flex gap-3 text-xs">
                 {[{ color: '#6C63FF', label: 'BB Mid' }, { color: '#00FF88', label: 'BB Upper' }, { color: '#FF4444', label: 'BB Lower' }].map(i => (
                   <div key={i.label} className="flex items-center gap-1"><div className="w-2 h-0.5" style={{ background: i.color }} /><span className="text-white/40">{i.label}</span></div>
@@ -243,7 +244,7 @@ const Analysis = () => {
             {/* RSI */}
             <div className="glass p-5 rounded-2xl">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-bold text-sm" style={{ color: isDark ? '#fff' : '#0F172A' }}>RSI (14)</h3>
+                <h3 className="font-bold text-sm flex items-center gap-1.5" style={{ color: isDark ? '#fff' : '#0F172A' }}>RSI (14) <InfoButton term="RSI" /></h3>
                 {chartData.length > 0 && (
                   <span className={`text-sm font-bold px-2 py-1 rounded-lg ${
                     (chartData[chartData.length - 1]?.rsi || 50) < 30 ? 'bg-[#00FF88]/15 text-[#00FF88]' :
@@ -275,7 +276,7 @@ const Analysis = () => {
 
             {/* MACD */}
             <div className="glass p-5 rounded-2xl">
-              <h3 className="font-bold text-sm mb-3" style={{ color: isDark ? '#fff' : '#0F172A' }}>MACD</h3>
+              <h3 className="font-bold text-sm mb-3 flex items-center gap-1.5" style={{ color: isDark ? '#fff' : '#0F172A' }}>MACD <InfoButton term="MACD" /></h3>
               <ResponsiveContainer width="100%" height={130}>
                 <BarChart data={chartData.filter(d => d.macd !== null)}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
@@ -320,16 +321,16 @@ const Analysis = () => {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
           {/* Key ratios */}
           <div className="glass p-5 rounded-2xl">
-            <h3 className="font-bold mb-4" style={{ color: isDark ? '#fff' : '#0F172A' }}>Key Ratios</h3>
+            <h3 className="font-bold mb-4 flex items-center gap-1.5" style={{ color: isDark ? '#fff' : '#0F172A' }}>Key Ratios</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <RatioCard label="P/E Ratio" value={analysis.pe_ratio} benchmark="22.5" isDark={isDark} />
-              <RatioCard label="P/B Ratio" value={analysis.pb_ratio} benchmark="3.5" isDark={isDark} />
-              <RatioCard label="EPS" value={`₹${analysis.eps}`} isDark={isDark} />
-              <RatioCard label="Book Value" value={`₹${analysis.book_value}`} isDark={isDark} />
-              <RatioCard label="ROE" value={analysis.roe} benchmark="15" unit="%" isDark={isDark} />
-              <RatioCard label="Debt / Equity" value={analysis.debt_equity} benchmark="1.0" isDark={isDark} />
-              <RatioCard label="Dividend Yield" value={analysis.dividend_yield} unit="%" isDark={isDark} />
-              <RatioCard label="Market Cap" value={`₹${(analysis.market_cap_cr || 0).toLocaleString('en-IN')} Cr`} isDark={isDark} />
+              <RatioCard label={<span className="flex items-center gap-1">P/E Ratio <InfoButton term="P/E Ratio" /></span>} value={analysis.pe_ratio} benchmark="22.5" isDark={isDark} />
+              <RatioCard label={<span className="flex items-center gap-1">P/B Ratio <InfoButton term="P/B Ratio" /></span>} value={analysis.pb_ratio} benchmark="3.5" isDark={isDark} />
+              <RatioCard label={<span className="flex items-center gap-1">EPS <InfoButton term="EPS" /></span>} value={`₹${analysis.eps}`} isDark={isDark} />
+              <RatioCard label={<span className="flex items-center gap-1">Book Value <InfoButton term="Book Value" /></span>} value={`₹${analysis.book_value}`} isDark={isDark} />
+              <RatioCard label={<span className="flex items-center gap-1">ROE <InfoButton term="ROE" /></span>} value={analysis.roe} benchmark="15" unit="%" isDark={isDark} />
+              <RatioCard label={<span className="flex items-center gap-1">Debt/Equity <InfoButton term="Debt/Equity" /></span>} value={analysis.debt_equity} benchmark="1.0" isDark={isDark} />
+              <RatioCard label={<span className="flex items-center gap-1">Dividend Yield <InfoButton term="Dividend Yield" /></span>} value={analysis.dividend_yield} unit="%" isDark={isDark} />
+              <RatioCard label={<span className="flex items-center gap-1">Market Cap <InfoButton term="Market Cap" /></span>} value={`₹${(analysis.market_cap_cr || 0).toLocaleString('en-IN')} Cr`} isDark={isDark} />
             </div>
           </div>
 

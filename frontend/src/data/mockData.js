@@ -349,41 +349,190 @@ export const GLOSSARY_TERMS = [
 export const ARTICLES = [
   {
     id: 1, title: "Warren Buffett's 5 Golden Rules for Beginners",
-    category: "Strategy", level: "Beginner", readTime: "5 min",
+    category: "Strategy", level: "Beginner", readTime: "5 min", xpReward: 50,
     excerpt: "The Oracle of Omaha's timeless wisdom distilled for Indian investors just starting their journey.",
-    content: "Rule 1: Never lose money. Rule 2: Never forget Rule 1..."
+    content: `**Rule 1: Never lose money.**
+The first priority is capital preservation. Before thinking about gains, ask: "What could go wrong?" Buffett avoided the 2008 crisis because Berkshire never owned subprime mortgages. For you as a student: don't put money you need for tuition or rent into stocks.
+
+**Rule 2: Never forget Rule 1.**
+A 50% loss requires a 100% gain just to break even. This is why protecting your downside matters more than chasing upside.
+
+**Rule 3: Invest in what you understand.**
+Buffett famously avoided tech stocks in the 1990s dot-com bubble because he didn't understand them. Apply this to Indian markets: you understand Hindustan Unilever (your family buys their soaps), so analyze it. You might not understand a niche biotech company.
+
+**Rule 4: Be fearful when others are greedy, greedy when others are fearful.**
+In March 2020 (COVID crash), Nifty 50 fell 40% in 40 days. Most investors were panicking and selling. Buffett's principle: that was the time to be buying quality Indian businesses at 40% off.
+
+**Rule 5: Time in the market beats timing the market.**
+₹10,000 invested in Nifty 50 in 2003 would be worth ~₹2.5 Lakhs today (25× return). The key was staying invested through all market cycles.
+
+**Indian context:** These rules apply perfectly to Indian markets. The Sensex has given ~15% CAGR over 30 years — higher than any fixed deposit. The only way to capture that return is to stay invested.`
   },
   {
     id: 2, title: "How to Analyze an Indian Company in 10 Minutes",
-    category: "Fundamental Analysis", level: "Intermediate", readTime: "8 min",
+    category: "Fundamental Analysis", level: "Intermediate", readTime: "8 min", xpReward: 75,
     excerpt: "A quick framework for evaluating NSE-listed companies using publicly available data.",
-    content: "Step 1: Check the business model..."
+    content: `## The 5-Minute Framework for NSE Stocks
+
+**Step 1: Understand the Business (2 min)**
+Can you explain what the company does in one sentence? If not, skip it. HDFC Bank: "Lends money to retail and corporate customers, earns the interest spread." That's it.
+
+**Step 2: Check the Numbers (3 min)**
+Open Screener.in (free for Indian stocks). Look for:
+- Revenue growth > 15% YoY
+- Net profit margin > 10% for most sectors
+- ROE > 15% consistently
+- Debt/Equity < 1 (except banks/NBFCs)
+- P/E ratio: Compare to sector average
+
+**Step 3: The Quality Test (2 min)**
+- Is revenue growing or shrinking?
+- Are promoters increasing or selling their stake? (promoter pledging is a red flag)
+- Any recent controversies, SEBI notices, or accounting irregularities?
+
+**Step 4: Valuation Check (2 min)**
+- P/E vs sector average: TCS at 25 P/E while sector average is 28 = slightly undervalued
+- PEG Ratio: P/E / EPS Growth Rate. PEG < 1 = potentially undervalued
+- DCF is complex; for beginners, just compare P/E to historical average
+
+**Step 5: Decision (1 min)**
+Good business + fair price + no red flags = potential investment. Bad business or expensive price = skip.
+
+**Free tools for Indian stocks:** Screener.in, Tickertape, NSE India, Moneycontrol, BSE India`
   },
   {
     id: 3, title: "Nifty 50 vs Sensex: What's the Difference?",
-    category: "Markets", level: "Beginner", readTime: "4 min",
+    category: "Markets", level: "Beginner", readTime: "4 min", xpReward: 30,
     excerpt: "Both track India's top companies — but there are key differences every investor must know.",
-    content: "NSE's Nifty 50 and BSE's Sensex are India's two primary benchmark indices..."
+    content: `## Nifty 50 vs Sensex: The Definitive Guide
+
+**What are they?**
+Both are stock market indices that track the performance of India's largest companies. They're like "report cards" for the Indian stock market.
+
+**Nifty 50 (NSE)**
+- Run by NSE (National Stock Exchange)
+- Tracks the 50 largest, most liquid companies
+- Base year: 1995 (base value 1,000)
+- Current value: ~22,000+ (as of 2025)
+- Covers ~13 sectors
+- More widely used for derivatives (futures & options)
+
+**Sensex (BSE)**
+- Run by BSE (Bombay Stock Exchange — Asia's oldest, est. 1875)
+- Tracks only 30 companies (more selective)
+- Base year: 1979 (base value 100)
+- Current value: ~73,000+ (because of lower base!)
+- Considered the emotional "pulse" of Indian markets
+
+**Key differences:**
+| Feature | Nifty 50 | Sensex |
+|---------|----------|--------|
+| Exchange | NSE | BSE |
+| No. of stocks | 50 | 30 |
+| Base value | 1,000 (1995) | 100 (1979) |
+| Used for | Derivatives | News/media |
+
+**For Indian investors:** Nifty 50 is the standard benchmark. When you buy an "index fund," it's almost always a Nifty 50 fund. Both move almost identically (correlation > 0.99).`
   },
   {
     id: 4, title: "Building Your First SIP Portfolio from Scratch",
-    category: "Mutual Funds", level: "Beginner", readTime: "10 min",
+    category: "Mutual Funds", level: "Beginner", readTime: "10 min", xpReward: 80,
     excerpt: "A step-by-step guide for college students to start investing with just ₹500/month.",
-    content: "Step 1: Open a demat + mutual fund account..."
+    content: `## Start a SIP Today — Even as a College Student
+
+**What you need to start:**
+1. PAN card
+2. Aadhaar card  
+3. Bank account (savings)
+4. 15 minutes to complete KYC online
+
+**Step 1: Open a Demat + Mutual Fund Account**
+Use platforms like Zerodha Coin, Groww, or Kuvera (all free for mutual funds). Complete e-KYC with Aadhaar OTP — done in 15 minutes.
+
+**Step 2: Choose Your First 3 Funds**
+For a student portfolio, this simple 3-fund approach works:
+
+| Fund Type | Allocation | Example Fund |
+|-----------|------------|--------------|
+| Large Cap Index | 50% | Nifty 50 Index Fund |
+| Mid Cap | 30% | Flexi-Cap or Mid Cap Fund |
+| International | 20% | US Tech or World Fund |
+
+**Step 3: Set Up Auto-SIP**
+Set SIP date on the 5th of each month (after salary/stipend). Even ₹500/month at 12% return for 10 years = ₹11,600. ₹5,000/month = ₹1.16 Lakhs.
+
+**The Power of Starting Early**
+Investing ₹5,000/month from age 22 to 60 at 12% = **₹5.26 Crores**
+Waiting until age 30: **₹2.27 Crores**  
+The 8-year head start is worth ₹3 Crore!
+
+**Common Mistakes to Avoid:**
+- Don't redeem during market crashes (defeats the purpose of SIP)
+- Don't invest in 10 funds (3 is enough for a student)
+- Don't chase last year's top performing fund (it rarely repeats)`
   },
   {
     id: 5, title: "Understanding India VIX — The Fear Index",
-    category: "Technical Analysis", level: "Intermediate", readTime: "6 min",
+    category: "Technical Analysis", level: "Intermediate", readTime: "6 min", xpReward: 60,
     excerpt: "What India VIX tells you about market sentiment and how to use it in your trading.",
-    content: "India VIX measures expected market volatility..."
+    content: `## India VIX: Reading Market Fear Like a Pro
+
+**What is VIX?**
+India VIX (Volatility Index) measures the market's expectation of volatility over the next 30 days. It's calculated from Nifty options prices. Traders call it the "Fear Index" — when fear rises, VIX rises.
+
+**How to Read VIX:**
+- **VIX < 12:** Extreme complacency (often a sign of overheated market)
+- **VIX 12–20:** Normal, calm market
+- **VIX 20–30:** Elevated fear, increased uncertainty
+- **VIX > 30:** Extreme fear (market crash territory)
+
+**Historical VIX Spikes in India:**
+- March 2020 (COVID): India VIX hit **86!** (historic high). Nifty fell 40%.
+- Nov 2016 (Demonetization): VIX spiked to 35. Market fell 6% in one day.
+- Feb 2020: VIX at 21 — a warning sign before COVID crash hit.
+
+**The Contrarian Strategy:**
+When VIX is very high (>40), fear is extreme. Historically, buying Nifty when VIX > 35 has given >50% returns in 12 months. Buffett's "be greedy when others are fearful" in action.
+
+**Practical Application for Traders:**
+- High VIX → Sell naked options (premium is high, collect more)
+- Low VIX → Buy options for protection (cheap insurance)
+- Rising VIX → Reduce position size, markets are getting dangerous`
   },
   {
     id: 6, title: "RBI Rate Hikes: How They Affect Your Stocks",
-    category: "Economy", level: "Intermediate", readTime: "7 min",
+    category: "Economy", level: "Intermediate", readTime: "7 min", xpReward: 65,
     excerpt: "Every RBI policy decision impacts your portfolio. Here's exactly how and which sectors to watch.",
-    content: "When RBI raises the repo rate..."
+    content: `## RBI Rate Hikes: Your Portfolio Impact Guide
+
+**The Basics**
+When RBI raises the repo rate (the rate at which it lends to banks):
+1. Banks increase lending rates (home loans, car loans cost more)
+2. EMIs rise → less disposable income → slower consumer spending
+3. Bond yields rise → bond prices fall → debt mutual funds suffer
+4. Stock valuations decline (future earnings worth less when discounted at higher rates)
+
+**Winners When Rates Rise:**
+- **Banking stocks (short-term):** Higher rates = better NIM (Net Interest Margin)
+- **Fixed deposits:** FD rates increase — more attractive vs stocks
+- **Insurance companies:** Invest premiums in bonds → earn more
+
+**Losers When Rates Rise:**
+- **Real estate stocks:** Higher home loan rates = less demand
+- **Auto:** More expensive EMIs = less car buying
+- **NBFCs/HFCs:** Higher borrowing costs
+- **High-debt companies:** Interest payments increase
+- **IT/Tech:** Global rate correlation (FII outflows hurt Nifty IT)
+
+**Indian Rate Cycle History:**
+- 2022-23: RBI hiked rates 250 bps (2.5%). Nifty IT fell ~25%.
+- 2019-20: RBI cut rates 135 bps. Real estate sector rallied 40%.
+
+**The Trade:**
+When RBI signals rate cuts, rotate from IT/debt funds into real estate, auto, and rate-sensitive sectors. This is the biggest macro trade in Indian markets.`
   },
 ];
+
 
 export const INVESTOR_QUOTES = [
   { quote: "The stock market is a device for transferring money from the impatient to the patient.", author: "Warren Buffett", role: "CEO, Berkshire Hathaway" },
@@ -414,14 +563,25 @@ export const BADGES = [
 ];
 
 export const INFO_DEFINITIONS = {
-  "P/E Ratio": { definition: "Price-to-Earnings ratio compares a company's stock price to its earnings per share.", formula: "P/E = Market Price per Share / Earnings per Share", example: "TCS at ₹3,789 with EPS ₹100 = P/E of 37.9. This means investors pay ₹37.9 for every ₹1 of earnings. Nifty 50 average P/E is 20-25." },
-  "EPS": { definition: "Earnings Per Share — the portion of a company's profit allocated to each outstanding share.", formula: "EPS = Net Profit / Total Outstanding Shares", example: "Infosys net profit ₹26,248 Cr with 4,200 Cr shares = EPS ≈ ₹62.5 per share." },
-  "ROE": { definition: "Return on Equity measures how efficiently a company uses shareholders' money to generate profit.", formula: "ROE = Net Profit / Shareholders' Equity × 100", example: "TCS ROE ~50% means for every ₹100 of shareholder equity, TCS earns ₹50 profit annually. Excellent!" },
-  "RSI": { definition: "Relative Strength Index is a momentum indicator that measures overbought/oversold conditions on a scale of 0-100.", formula: "RSI = 100 - (100 / (1 + Average Gain / Average Loss))", example: "If Nifty RSI is at 78, it's overbought — market has risen quickly and may correct soon." },
-  "MACD": { definition: "Moving Average Convergence Divergence identifies momentum changes by comparing two exponential moving averages.", formula: "MACD Line = 12-day EMA - 26-day EMA; Signal Line = 9-day EMA of MACD", example: "When MACD crosses above Signal Line, it's a bullish signal. HDFC Bank MACD crossover in Oct 2023 preceded a 15% rally." },
-  "Bollinger Bands": { definition: "Volatility bands placed above and below a moving average. Shows when prices are statistically high or low.", formula: "Upper = SMA(20) + 2×StdDev; Lower = SMA(20) - 2×StdDev", example: "When Nifty touches lower Bollinger Band, it has historically been a mean-reversion buying opportunity." },
-  "Sharpe Ratio": { definition: "Measures risk-adjusted return — how much excess return you earn for each unit of risk taken.", formula: "Sharpe = (Portfolio Return - Risk-free Rate) / Standard Deviation", example: "A fund returning 15% with 10% volatility and 7% risk-free rate has Sharpe = (15-7)/10 = 0.8. Above 1 is considered good." },
-  "Market Cap": { definition: "Total market value of a company's outstanding shares.", formula: "Market Cap = Current Share Price × Total Outstanding Shares", example: "Reliance Industries at ₹2,456 × 1,348 Cr shares = ₹33.1 Lakh Crore market cap — India's most valuable company!" },
-  "NAV": { definition: "Net Asset Value is the price of one unit of a mutual fund.", formula: "NAV = (Total Assets - Liabilities) / Number of Units", example: "HDFC Index Fund NAV ₹542. Buy 100 units = ₹54,200 invested. If NAV rises to ₹600, your investment is worth ₹60,000." },
-  "SIP": { definition: "Systematic Investment Plan — invest a fixed amount in mutual funds at regular intervals.", formula: "M = P × [((1+r)^n - 1)/r] × (1+r) where P=monthly amount, r=monthly rate, n=months", example: "₹5,000/month SIP at 12% for 10 years: Total invested = ₹6L, but you accumulate ₹11.6L thanks to compounding!" },
+  "P/E Ratio": { definition: "Price-to-Earnings ratio compares a company's stock price to its earnings per share. A higher P/E means investors are willing to pay more for each rupee of earnings.", formula: "P/E = Market Price per Share / Earnings per Share", example: "TCS at ₹3,789 with EPS ₹100 = P/E of 37.9. This means investors pay ₹37.9 for every ₹1 of earnings. Nifty 50 average P/E is 20-25." },
+  "EPS": { definition: "Earnings Per Share — the portion of a company's profit allocated to each outstanding share. Higher EPS = more profitable per share.", formula: "EPS = Net Profit / Total Outstanding Shares", example: "Infosys net profit ₹26,248 Cr with 4,200 Cr shares = EPS ≈ ₹62.5 per share." },
+  "ROE": { definition: "Return on Equity measures how efficiently a company uses shareholders' money to generate profit. Think of it as the 'yield' on equity capital.", formula: "ROE = Net Profit / Shareholders' Equity × 100", example: "TCS ROE ~50% means for every ₹100 of shareholder equity, TCS earns ₹50 profit annually. Excellent!" },
+  "RSI": { definition: "Relative Strength Index is a momentum indicator (0–100) that measures overbought/oversold conditions. RSI > 70 = overbought (possibly overvalued). RSI < 30 = oversold (possibly undervalued).", formula: "RSI = 100 - (100 / (1 + Average Gain / Average Loss))", example: "If Nifty RSI is at 78, it's overbought — market has risen quickly and may correct soon. RSI under 30 in March 2020 (COVID crash) was a historic buy signal." },
+  "MACD": { definition: "Moving Average Convergence Divergence identifies momentum changes by comparing two exponential moving averages. A MACD crossover above the signal line is bullish; below is bearish.", formula: "MACD Line = 12-day EMA − 26-day EMA\nSignal Line = 9-day EMA of MACD\nHistogram = MACD − Signal", example: "When MACD crosses above Signal Line, it's a bullish signal. HDFC Bank MACD crossover in Oct 2023 preceded a 15% rally." },
+  "Bollinger Bands": { definition: "Volatility bands placed above and below a 20-day moving average. Price touching the upper band signals overbought; lower band signals oversold. Bands widen in volatile markets.", formula: "Upper Band = SMA(20) + 2 × StdDev\nMiddle Band = SMA(20)\nLower Band = SMA(20) − 2 × StdDev", example: "When Nifty touches lower Bollinger Band, it has historically been a mean-reversion buying opportunity. Bands narrow before big moves (volatility squeeze)." },
+  "Sharpe Ratio": { definition: "Measures risk-adjusted return — how much excess return you earn for each unit of risk. A higher Sharpe ratio = better risk-adjusted performance. Above 1 is good, above 2 is excellent.", formula: "Sharpe = (Portfolio Return − Risk-free Rate) / Standard Deviation of Returns", example: "A fund returning 15% with 10% volatility and 7% risk-free rate has Sharpe = (15−7)/10 = 0.8. Warren Buffett's long-term Sharpe is ~0.76." },
+  "Max Drawdown": { definition: "The maximum peak-to-trough decline during a specific period. Shows the worst-case loss an investor could have experienced. Lower drawdown = better capital preservation.", formula: "Max Drawdown = (Trough Value − Peak Value) / Peak Value × 100", example: "If a portfolio went from ₹1,00,000 to ₹65,000 at the worst point, Max Drawdown = −35%. Nifty 50 max drawdown in 2008 was ~65%." },
+  "Win Rate": { definition: "The percentage of trades that are profitable. A 55%+ win rate is considered good for most strategies, but win rate alone doesn't measure profitability — loss size matters too.", formula: "Win Rate = (Number of Winning Trades / Total Trades) × 100", example: "A strategy with 60% win rate but 2:1 reward/risk ratio (avg win ₹200, avg loss ₹100) is very profitable even though 40% of trades lose." },
+  "Market Cap": { definition: "Total market value of a company's outstanding shares. Large Cap (>₹20,000 Cr), Mid Cap (₹5,000–20,000 Cr), Small Cap (<₹5,000 Cr).", formula: "Market Cap = Current Share Price × Total Outstanding Shares", example: "Reliance Industries at ₹1,348 × ~1,390 Cr shares ≈ ₹18.7 Lakh Crore — India's most valuable company!" },
+  "NAV": { definition: "Net Asset Value is the price of one unit of a mutual fund. It changes daily based on the fund's portfolio value.", formula: "NAV = (Total Assets − Liabilities) / Number of Units", example: "HDFC Index Fund NAV ₹542. Buy 100 units = ₹54,200 invested. If NAV rises to ₹600, your investment is worth ₹60,000." },
+  "SIP": { definition: "Systematic Investment Plan — invest a fixed amount in mutual funds at regular intervals (monthly). Averages out market volatility through rupee cost averaging.", formula: "M = P × [((1+r)^n − 1)/r] × (1+r) where P=monthly amount, r=monthly rate, n=months", example: "₹5,000/month SIP at 12% for 10 years: Total invested = ₹6L, but you accumulate ₹11.6L thanks to compounding!" },
+  "P/B Ratio": { definition: "Price-to-Book ratio compares a stock's market price to its book value (net assets). P/B < 1 may indicate undervaluation; P/B > 3 is common for high-quality businesses.", formula: "P/B = Market Price per Share / Book Value per Share", example: "HDFC Bank P/B of ~3.2 means the market values it at 3.2× its net assets — premium for its strong brand and low NPAs." },
+  "Book Value": { definition: "The net asset value of a company per share — what shareholders would receive if the company liquidated all assets and paid all debts.", formula: "Book Value per Share = (Total Assets − Total Liabilities) / Shares Outstanding", example: "SBI book value ₹500/share. If stock trades at ₹600, P/B = 1.2 — reasonable for a PSU bank." },
+  "Dividend Yield": { definition: "Annual dividend as a percentage of stock price. Higher yield = more income per rupee invested, but very high yield may signal a falling stock price.", formula: "Dividend Yield = (Annual Dividend per Share / Stock Price) × 100", example: "ITC pays ₹6.25 dividend at ₹456 price → Yield = 1.37%. Better than savings account, plus potential capital appreciation." },
+  "Debt/Equity": { definition: "Measures how much debt a company uses relative to equity. Lower = less financial risk. Banking/NBFC sectors naturally have higher D/E due to their business model.", formula: "D/E Ratio = Total Debt / Shareholders' Equity", example: "TCS D/E ≈ 0 (debt-free!) vs Tata Steel D/E ~1.5. Asset-light IT companies prefer low leverage; heavy industries need more debt." },
+  "Backtest": { definition: "Testing a trading strategy on historical data to see how it would have performed. Past performance does not guarantee future results — use backtests to understand risk and behavior, not profit predictions.", formula: "Return = (Final Portfolio Value − Initial Value) / Initial Value × 100", example: "A Moving Average Crossover strategy backtested on RELIANCE (2022–2025) showed +28% return vs Nifty +21% benchmark — suggesting it added alpha." },
+  "Moving Average": { definition: "The average price over a set number of days, updated every day. Smooths out short-term noise to reveal the underlying trend. Prices above MA = uptrend; below = downtrend.", formula: "SMA(n) = Sum of closing prices for n days / n", example: "When Nifty price crosses above 200-day MA, it's often called a 'golden cross' — a strong long-term bullish signal." },
+  "Volume": { definition: "The total number of shares traded in a given time period. High volume confirms price trends; low volume suggests weak conviction. Volume spikes often precede big price moves.", formula: "Volume Weighted Average Price (VWAP) = Σ(Price × Volume) / Σ(Volume)", example: "If Reliance rises 3% on 10× average volume, it signals strong institutional buying. The same move on low volume may be unsustainable." },
+  "Benchmark Return": { definition: "The return of a market index (like Nifty 50) used as a reference point. Your strategy must beat the benchmark to justify the effort of active trading vs just buying an index fund.", formula: "Alpha = Strategy Return − Benchmark Return", example: "Nifty 50 has historically returned ~14.5% annually. If your strategy returns 18%, your alpha is +3.5% — you're beating the market!" },
+  "Equity Curve": { definition: "A chart showing the growth (or decline) of a portfolio over time when a strategy is applied. A smooth upward curve with small drawdowns is the ideal.", formula: "Portfolio Value(t) = Initial Capital × (1 + Return(t))", example: "A flat equity curve from Jan–Jun 2022 (sideways market) for an MA strategy shows it struggles in ranging markets — use RSI instead." },
 };

@@ -19,7 +19,7 @@ const QUICK_ACTIONS = [
   { label: "Continue Learning", icon: Map, path: "/roadmap", color: "#6C63FF", desc: "Pick up where you left off" },
   { label: "Paper Trade", icon: TrendingUp, path: "/trade", color: "#00D4FF", desc: "Simulate real trades" },
   { label: "Run a Backtest", icon: FlaskConical, path: "/algo-lab", color: "#FFB800", desc: "Test your strategy" },
-  { label: "Daily Quiz", icon: BookOpen, path: "/learn", color: "#00FF88", desc: "+100 XP available" },
+  { label: "Daily Quiz", icon: BookOpen, path: "/learn#quiz", color: "#00FF88", desc: "+100 XP available" },
 ];
 
 const Dashboard = () => {

@@ -5,10 +5,10 @@ import { LayoutDashboard, Map, TrendingUp, PieChart, Users, BookOpen, Trophy, Fl
 
 const tabs = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Home' },
-  { path: '/roadmap', icon: Map, label: 'Learn' },
-  { path: '/trade', icon: TrendingUp, label: 'Trade' },
-  { path: '/portfolio', icon: PieChart, label: 'Portfolio' },
-  { path: '/community', icon: Users, label: 'Social' },
+  { path: '/roadmap',   icon: Map,             label: 'Learn' },
+  { path: '/trade',     icon: TrendingUp,      label: 'Trade' },
+  { path: '/community', icon: Users,           label: 'Social' },
+  { path: '/learn',     icon: BookOpen,        label: 'Blogs' },
 ];
 
 const BottomNav = () => {

@@ -4,6 +4,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import axios from 'axios';
 import { useApp, API } from '../context/AppContext';
 import { FlaskConical, Play, TrendingUp, TrendingDown, ChevronRight, Code2, BarChart2, Save, Zap } from 'lucide-react';
+import InfoButton from '../components/InfoButton';
 
 const SYMBOLS = ['RELIANCE', 'TCS', 'HDFCBANK', 'INFY', 'ICICIBANK', 'SBIN', 'WIPRO', 'BAJFINANCE', 'TATAMOTORS', 'AXISBANK'];
 const PERIODS = [{ label: '6 Months', days: 180 }, { label: '1 Year', days: 365 }, { label: '2 Years', days: 730 }];
@@ -12,7 +13,7 @@ const MetricCard = ({ label, value, sub, color, testid }) => {
   const { isDark } = useApp();
   return (
     <div className="glass p-4 rounded-2xl" data-testid={testid}>
-      <p className="text-xs mb-1" style={{ color: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}>{label}</p>
+      <div className="text-xs mb-1 flex items-center gap-1" style={{ color: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}>{label}</div>
       <p className="text-xl font-black" style={{ color, fontFamily: 'Outfit, sans-serif' }}>{value}</p>
       {sub && <p className="text-xs mt-0.5 text-white/30">{sub}</p>}
     </div>
@@ -173,15 +174,15 @@ const AlgoLab = () => {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
                   {/* Metrics */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <MetricCard label="Total Return" value={`${results.total_return >= 0 ? '+' : ''}${results.total_return}%`}
+                    <MetricCard label={<span className="flex items-center gap-1">Total Return <InfoButton term="Benchmark Return" /></span>} value={`${results.total_return >= 0 ? '+' : ''}${results.total_return}%`}
                       color={results.total_return >= 0 ? '#00FF88' : '#FF4444'} testid="backtest-return"
                       sub={`Benchmark: ${results.benchmark_return}%`} />
-                    <MetricCard label="Sharpe Ratio" value={results.sharpe_ratio.toFixed(2)}
+                    <MetricCard label={<span className="flex items-center gap-1">Sharpe Ratio <InfoButton term="Sharpe Ratio" /></span>} value={results.sharpe_ratio.toFixed(2)}
                       color={results.sharpe_ratio > 1 ? '#00FF88' : results.sharpe_ratio > 0 ? '#FFB800' : '#FF4444'}
                       testid="backtest-sharpe" sub="> 1 is good" />
-                    <MetricCard label="Max Drawdown" value={`${results.max_drawdown.toFixed(1)}%`}
+                    <MetricCard label={<span className="flex items-center gap-1">Max Drawdown <InfoButton term="Max Drawdown" /></span>} value={`${results.max_drawdown.toFixed(1)}%`}
                       color="#FF4444" testid="backtest-drawdown" sub="Peak-to-trough loss" />
-                    <MetricCard label="Win Rate" value={`${results.win_rate.toFixed(0)}%`}
+                    <MetricCard label={<span className="flex items-center gap-1">Win Rate <InfoButton term="Win Rate" /></span>} value={`${results.win_rate.toFixed(0)}%`}
                       color={results.win_rate > 55 ? '#00FF88' : '#FFB800'}
                       testid="backtest-winrate" sub={`${results.num_trades} trades`} />
                   </div>
@@ -207,7 +208,9 @@ const AlgoLab = () => {
                   {/* Equity curve */}
                   {results.equity_curve?.length > 0 && (
                     <div className="glass p-5 rounded-2xl">
-                      <h3 className="font-bold mb-3" style={{ color: isDark ? '#fff' : '#0F172A' }}>Equity Curve</h3>
+                      <h3 className="font-bold mb-3 flex items-center gap-1.5" style={{ color: isDark ? '#fff' : '#0F172A' }}>
+                        Equity Curve <InfoButton term="Equity Curve" />
+                      </h3>
                       <ResponsiveContainer width="100%" height={200}>
                         <AreaChart data={results.equity_curve}>
                           <defs>
