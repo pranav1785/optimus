@@ -156,30 +156,31 @@ chat_sessions: { session_id, last_active }
 ## Implementation Status (Updated: March 2026)
 
 ### Completed ✅
-- [x] Backend: All FastAPI routes, MongoDB integration, mock data engine
-- [x] Frontend: App.js routing for all 12 pages
-- [x] Landing page (hero)
-- [x] Dashboard (portfolio metrics, XP card, quick actions, ticker)
-- [x] Roadmap (12-town grid with progress rings)
-- [x] TownDetail (lesson accordion, quiz flow, badge reward)
-- [x] TradingTerminal (stock chart, order form, MA indicators)
-- [x] Portfolio (holdings table, pie chart, trade history, reset)
-- [x] Analysis (technical: RSI/MACD/BB; fundamental: ratios/income/analysts)
-- [x] AlgoLab (strategy picker, backtest config, equity curve, trade log)
-- [x] Community (feed, create post, topic filters, like, embedded leaderboard)
-- [x] Arena (competitions, join, create, embedded leaderboard)
-- [x] LearnHub (articles, glossary search, daily quiz, crash simulator)
-- [x] Profile (user hero, stats, badges, town progress, recent trades)
-- [x] AIChatbot (floating chatbot, Claude Sonnet 4.5, context-aware)
-- [x] Sidebar + BottomNav navigation
+- [x] Backend: All FastAPI routes, MongoDB integration, yfinance real NSE prices (5-min cache, graceful fallback)
+- [x] Frontend: All 12 pages routed and fully implemented
+- [x] **Landing, Dashboard** (with daily quiz CTA quick action)
+- [x] **Roadmap → "Learn"**: Island map (CoC-style), 12 towns, SVG paths, zone labels (Beach/Forest/Mountain), animated nodes, Side Quests panel, Town popup
+- [x] **TownDetail**: Lesson accordion, quiz flow, lessons count capped correctly, "Side Quest Unlocked" try-out section
+- [x] **TradingTerminal**: Real prices, z-index fixed stock dropdown, labeled volume chart, info buttons
+- [x] **Portfolio**: Holdings table, pie chart, crash sim tab (3 historical crashes)
+- [x] **Analysis**: RSI/MACD/BB charts with InfoButton, fundamental ratios with InfoButton
+- [x] **AlgoLab**: Strategy picker, backtest engine, equity curve, metrics with InfoButton
+- [x] **Community**: Feed, create post, like, topic filters, embedded leaderboard
+- [x] **Arena**: Competitions, join/create, embedded leaderboard
+- [x] **Blogs (formerly Learn)**: Daily quiz banner CTA + 3 tabs (Quiz/Articles/Glossary), full article reader
+- [x] **Profile**: Read-only hero, badges, town progress, recent trades
+- [x] **AIChatbot**: Claude Sonnet 4.5, markdown formatting, click-outside close
+- [x] Sidebar + BottomNav: "Learn" (island) / "Blogs" (articles) correctly labeled
+- [x] InfoButton on: Analysis (BB, RSI, MACD, P/E, ROE, EPS, Market Cap, etc.), AlgoLab (Sharpe, Drawdown, Win Rate, Equity Curve), Portfolio (P&L), Trade (Volume)
+- [x] Full ARTICLES content (6 articles with proper markdown content + article reader)
+- [x] Extended INFO_DEFINITIONS (20 terms)
 
 ### Pending / Backlog 🔲
-- [ ] P1: Real NSE/BSE API integration (currently using deterministic mock data)
-- [ ] P1: Article content expansion (full articles currently just excerpts)
+- [ ] P1: TATAMOTORS.NS yfinance symbol fix (currently uses fallback mock price)
 - [ ] P2: Comments on community posts (UI + backend)
-- [ ] P2: Multiple user simulation (multiplayer leaderboard with real data)
-- [ ] P2: Profile editing (name/college edit form)
+- [ ] P2: Multiple user simulation (real multiplayer leaderboards)
+- [ ] P2: Profile editing (name/college)
 - [ ] P2: Stock watchlist feature
-- [ ] P3: Push notifications
-- [ ] P3: PDF export for portfolio/trade history
-- [ ] P3: Advanced candlestick chart (TradingView widget integration)
+- [ ] P3: Push/in-app notifications
+- [ ] P3: PDF portfolio export
+- [ ] P3: TradingView Lightweight Charts (candlestick) integration
