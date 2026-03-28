@@ -174,7 +174,7 @@ chat_sessions: { session_id, last_active }
 - [x] InfoButton on: Analysis (BB, RSI, MACD, P/E, ROE, EPS, Market Cap, etc.), AlgoLab (Sharpe, Drawdown, Win Rate, Equity Curve), Portfolio (P&L), Trade (Volume)
 - [x] Full ARTICLES content (6 articles with proper markdown content + article reader)
 - [x] Extended INFO_DEFINITIONS (20 terms)
-- [x] **Hex Island Roadmap Redesign** (Feb 2026): Hexagonal clip-path tiles, zone-specific vibrant colors (beach=amber, forest=green, mountain=indigo, peak=gold), organic radial-gradient terrain, hex-grid ocean background, compact pill labels (no overlap), floating decorative elements
+- [x] **Hex Island Roadmap Redesign v2** (Feb 2026): Fixed overlapping zone badges (placed in safe gap rows between hex rows), fixed Town 1 cut-off by adjusting y=84%, made locked hexes visible with slate-blue (#1a1c38) color, peak hex clipping fixed (y=6%), all 12 towns fully visible without text/badge overlap
 - [x] **MA10/MA30 default OFF** in TradingTerminal (cleaner default chart view)
 - [x] **Volume tooltip text → white** in TradingTerminal (readability fix)
 - [x] **Daily Quiz banner** on Dashboard — prominent green CTA between stats and chart

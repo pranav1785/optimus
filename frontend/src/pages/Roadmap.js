@@ -13,19 +13,19 @@ const TOWN_EMOJIS = {
   6: '🏦', 7: '⚡', 8: '🎯', 9: '💎', 10: '🪙', 11: '🏗️', 12: '🚀',
 };
 
-// ─── Positions — spaced with minimum 15 % vertical gap between every connected pair ───
+// ─── Positions — 13 % vertical steps starting at y=6 %, all within visible island ───
 const TOWN_POSITIONS = [
-  { id: 1,  x: 50, y: 90, zone: 'beach'    },
-  { id: 2,  x: 24, y: 75, zone: 'beach'    },
-  { id: 3,  x: 75, y: 75, zone: 'beach'    },
-  { id: 4,  x: 11, y: 60, zone: 'forest'   },
-  { id: 5,  x: 50, y: 60, zone: 'forest'   },
-  { id: 6,  x: 87, y: 60, zone: 'forest'   },
-  { id: 7,  x: 68, y: 45, zone: 'forest'   },
-  { id: 8,  x: 30, y: 45, zone: 'mountain' },
-  { id: 9,  x: 50, y: 30, zone: 'mountain' },
-  { id: 10, x: 19, y: 15, zone: 'mountain' },
-  { id: 11, x: 79, y: 15, zone: 'mountain' },
+  { id: 1,  x: 50, y: 84, zone: 'beach'    },
+  { id: 2,  x: 24, y: 71, zone: 'beach'    },
+  { id: 3,  x: 74, y: 71, zone: 'beach'    },
+  { id: 4,  x: 14, y: 58, zone: 'forest'   },
+  { id: 5,  x: 50, y: 58, zone: 'forest'   },
+  { id: 6,  x: 83, y: 58, zone: 'forest'   },
+  { id: 7,  x: 67, y: 45, zone: 'forest'   },
+  { id: 8,  x: 31, y: 45, zone: 'mountain' },
+  { id: 9,  x: 50, y: 32, zone: 'mountain' },
+  { id: 10, x: 20, y: 19, zone: 'mountain' },
+  { id: 11, x: 78, y: 19, zone: 'mountain' },
   { id: 12, x: 50, y: 6,  zone: 'peak'     },
 ];
 
@@ -129,16 +129,16 @@ const TownNode = ({ town, position, progress, onClick }) => {
   const isPeak   = town.id === 12;
   const emoji    = TOWN_EMOJIS[town.id] || '🏛️';
 
-  const inner  = isPeak ? 80 : 66;
+  const inner  = isPeak ? 76 : 66;
   const outer  = inner + 10;
 
   const ringClr = isDone  ? '#00FF88'
                 : isIP    ? '#7C73FF'
                 : !isLocked ? zc.border
-                : 'rgba(255,255,255,0.08)';
+                : 'rgba(120,125,180,0.25)';
 
   const tileBg  = isLocked
-    ? 'linear-gradient(145deg, #0c0c1a, #111128)'
+    ? 'linear-gradient(145deg, #1a1c38, #242650)'
     : zc.gradient;
 
   const glowClr = isDone  ? 'rgba(0,255,136,0.55)'
@@ -192,7 +192,7 @@ const TownNode = ({ town, position, progress, onClick }) => {
           {/* Main icon */}
           <div style={{ position:'relative', zIndex:2, marginTop: isPeak ? 10 : 7 }}>
             {isLocked
-              ? <Lock size={isPeak?22:17} style={{ color:'rgba(255,255,255,0.18)' }} />
+              ? <Lock size={isPeak?22:17} style={{ color:'rgba(180,185,230,0.45)' }} />
               : isDone
                 ? <CheckCircle2 size={isPeak?26:21} style={{ color:'#fff' }} />
                 : <span style={{ fontSize: isPeak?24:19, lineHeight:1 }}>{emoji}</span>}
@@ -430,10 +430,10 @@ const Roadmap = () => {
 
         {/* Zone ambient glows */}
         {[
-          { x:'20%', y:'85%', clr:'rgba(230,160,40,0.07)', sz:400 },
-          { x:'65%', y:'60%', clr:'rgba(40,160,55,0.07)',  sz:450 },
-          { x:'40%', y:'35%', clr:'rgba(64,80,224,0.08)',  sz:380 },
-          { x:'50%', y:'6%',  clr:'rgba(230,170,16,0.1)',  sz:240 },
+          { x:'22%', y:'80%', clr:'rgba(230,160,40,0.07)', sz:400 },
+          { x:'65%', y:'58%', clr:'rgba(40,160,55,0.07)',  sz:450 },
+          { x:'40%', y:'33%', clr:'rgba(64,80,224,0.08)',  sz:380 },
+          { x:'50%', y:'7%',  clr:'rgba(230,170,16,0.1)',  sz:240 },
         ].map((o,i) => (
           <motion.div key={i}
             style={{ position:'absolute', left:o.x, top:o.y, width:o.sz, height:o.sz,
@@ -484,45 +484,48 @@ const Roadmap = () => {
         <div className="absolute" style={{ left:'6%', right:'6%', top:'2%', bottom:'6%',
             borderRadius:'44% 56% 50% 50% / 48% 44% 56% 52%', overflow:'hidden',
             boxShadow:'0 0 120px rgba(20,60,15,0.25), 0 30px 90px rgba(0,0,0,0.75)' }}>
-          {/* Base layer — beach warm sand */}
+          {/* Base gradient — peak(dark top)→mountain(indigo)→forest(green)→beach(amber) */}
           <div style={{ position:'absolute', inset:0,
-              background:'linear-gradient(180deg,#0a0d38 0%,#1a1f60 18%,#1e2880 30%,#182060 40%,#0e3814 52%,#1a5020 63%,#226030 72%,#4a3008 82%,#704a10 90%,#a07020 100%)' }} />
-          {/* Forest radial patch — left side */}
-          <div style={{ position:'absolute', inset:0,
-              background:'radial-gradient(ellipse 50% 35% at 25% 60%, rgba(20,100,28,0.85) 0%, transparent 80%)' }} />
-          {/* Forest radial patch — right side */}
-          <div style={{ position:'absolute', inset:0,
-              background:'radial-gradient(ellipse 55% 32% at 78% 58%, rgba(18,90,24,0.8) 0%, transparent 80%)' }} />
+              background:'linear-gradient(180deg,#060a28 0%,#0e1650 14%,#182080 26%,#1e2890 38%,#142e14 51%,#1c5020 60%,#246428 70%,#4a3206 78%,#7c5210 88%,#aa7c28 100%)' }} />
           {/* Mountain radial patch */}
           <div style={{ position:'absolute', inset:0,
-              background:'radial-gradient(ellipse 60% 40% at 50% 28%, rgba(28,36,140,0.9) 0%, rgba(20,28,100,0.7) 40%, transparent 80%)' }} />
-          {/* Peak dark cap */}
-          <div style={{ position:'absolute', top:0, left:'25%', right:'25%', height:'18%',
-              background:'radial-gradient(ellipse 70% 100% at 50% 0%, rgba(8,10,46,0.95) 0%, transparent 100%)' }} />
-          {/* Beach/sand bottom band */}
-          <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'30%',
-              background:'linear-gradient(180deg, transparent 0%, rgba(80,50,6,0.7) 30%, rgba(140,90,15,0.9) 65%, rgba(190,130,30,1) 100%)' }} />
-          {/* Subtle vignette border */}
+              background:'radial-gradient(ellipse 68% 40% at 50% 28%, rgba(28,36,150,0.92) 0%, transparent 80%)' }} />
+          {/* Forest left radial */}
           <div style={{ position:'absolute', inset:0,
-              background:'radial-gradient(ellipse 90% 90% at 50% 50%, transparent 55%, rgba(0,0,0,0.45) 100%)' }} />
+              background:'radial-gradient(ellipse 48% 28% at 22% 57%, rgba(22,106,30,0.84) 0%, transparent 75%)' }} />
+          {/* Forest right radial */}
+          <div style={{ position:'absolute', inset:0,
+              background:'radial-gradient(ellipse 50% 26% at 80% 55%, rgba(20,96,26,0.80) 0%, transparent 75%)' }} />
+          {/* Forest center fill */}
+          <div style={{ position:'absolute', inset:0,
+              background:'radial-gradient(ellipse 40% 20% at 50% 55%, rgba(24,110,32,0.78) 0%, transparent 75%)' }} />
+          {/* Beach sand bottom */}
+          <div style={{ position:'absolute', bottom:0, left:0, right:0, height:'33%',
+              background:'linear-gradient(180deg,transparent 0%,rgba(72,48,8,0.68) 22%,rgba(132,88,14,0.9) 52%,rgba(178,124,28,1) 78%,rgba(200,148,42,1) 100%)' }} />
+          {/* Dark narrow peak cap */}
+          <div style={{ position:'absolute', top:0, left:'22%', right:'22%', height:'16%',
+              background:'radial-gradient(ellipse 80% 100% at 50% 0%, rgba(4,6,32,0.95) 0%, transparent 100%)' }} />
+          {/* Edge vignette */}
+          <div style={{ position:'absolute', inset:0,
+              background:'radial-gradient(ellipse 90% 90% at 50% 50%, transparent 52%, rgba(0,0,0,0.52) 100%)' }} />
         </div>
 
-        {/* Decorative elements */}
+        {/* Decorative elements — positioned in empty areas between hexes */}
         {[
-          { e:'🌲', x:'13%', y:'44%', sz:18, dy:0    },
-          { e:'🌲', x:'84%', y:'47%', sz:16, dy:0.5  },
-          { e:'🌲', x:'23%', y:'56%', sz:14, dy:1    },
-          { e:'🌲', x:'74%', y:'62%', sz:15, dy:1.5  },
-          { e:'🌲', x:'37%', y:'70%', sz:12, dy:0.8  },
-          { e:'🌲', x:'61%', y:'69%', sz:13, dy:1.2  },
-          { e:'🌴', x:'18%', y:'82%', sz:20, dy:0.3  },
-          { e:'🌴', x:'80%', y:'80%', sz:18, dy:0.9  },
-          { e:'🌴', x:'44%', y:'89%', sz:18, dy:0.6  },
-          { e:'❄️', x:'46%', y:'4%',  sz:13, dy:0    },
-          { e:'⛵', x:'3%',  y:'52%', sz:20, dy:0    },
-          { e:'⛵', x:'92%', y:'67%', sz:18, dy:1    },
-          { e:'🌊', x:'6%',  y:'72%', sz:16, dy:0.4  },
-          { e:'🌊', x:'90%', y:'84%', sz:14, dy:0.7  },
+          { e:'🌲', x:'13%', y:'50%', sz:16, dy:0    },
+          { e:'🌲', x:'83%', y:'50%', sz:15, dy:0.5  },
+          { e:'🌲', x:'22%', y:'63%', sz:14, dy:1    },
+          { e:'🌲', x:'76%', y:'63%', sz:14, dy:1.5  },
+          { e:'🌲', x:'37%', y:'50%', sz:12, dy:0.8  },
+          { e:'🌲', x:'62%', y:'51%', sz:12, dy:1.2  },
+          { e:'🌴', x:'18%', y:'79%', sz:18, dy:0.3  },
+          { e:'🌴', x:'80%', y:'77%', sz:17, dy:0.9  },
+          { e:'🌴', x:'43%', y:'88%', sz:17, dy:0.6  },
+          { e:'❄️', x:'42%', y:'4%',  sz:12, dy:0    },
+          { e:'⛵', x:'3%',  y:'50%', sz:19, dy:0    },
+          { e:'⛵', x:'92%', y:'65%', sz:17, dy:1    },
+          { e:'🌊', x:'5%',  y:'70%', sz:15, dy:0.4  },
+          { e:'🌊', x:'91%', y:'82%', sz:13, dy:0.7  },
         ].map((el,i) => (
           <motion.div key={i} className="absolute select-none pointer-events-none"
             style={{ left:el.x, top:el.y, fontSize:el.sz, zIndex:2, lineHeight:1 }}
@@ -532,20 +535,19 @@ const Roadmap = () => {
           </motion.div>
         ))}
 
-        {/* Floating castle at peak */}
-        <motion.div className="absolute select-none pointer-events-none text-2xl"
-          style={{ left:'50%', top:'1%', transform:'translateX(-50%)', zIndex:3 }}
+        {/* Floating castle — offset to avoid overlapping peak hex */}
+        <motion.div className="absolute select-none pointer-events-none text-xl"
+          style={{ left:'66%', top:'5%', transform:'translateX(-50%)', zIndex:3 }}
           animate={{ y:[-3,3,-3] }}
           transition={{ repeat:Infinity, duration:3.5, ease:'easeInOut' }}>
           🏰
         </motion.div>
 
-        {/* Zone badges */}
+        {/* Zone badges — placed in gap rows between hex rows, never on a hex y-level */}
         {[
-          { zone:'beach',    x:'50%', y:'94%' },
-          { zone:'forest',   x:'50%', y:'73%' },
-          { zone:'mountain', x:'50%', y:'41%' },
-          { zone:'peak',     x:'50%', y:'12%' },
+          { zone:'mountain', x:'50%', y:'25.5%' },  // gap between y=19 and y=32
+          { zone:'forest',   x:'50%', y:'51.5%' },  // gap between y=45 and y=58
+          { zone:'beach',    x:'50%', y:'77.5%' },  // gap between y=71 and y=84
         ].map(({ zone, x, y }) => {
           const zc = ZONE_CONFIG[zone];
           return (
