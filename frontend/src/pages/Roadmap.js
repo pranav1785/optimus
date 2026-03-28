@@ -81,10 +81,15 @@ const PathLines = ({ progress }) => {
   progress.forEach(p => { sm[p.town_id] = p.status; });
 
   return (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
+    <svg
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      style={{ zIndex: 1 }}
+    >
       <defs>
         <filter id="glow">
-          <feGaussianBlur stdDeviation="2.5" result="blur" />
+          <feGaussianBlur stdDeviation="0.4" result="blur" />
           <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
       </defs>
@@ -103,13 +108,14 @@ const PathLines = ({ progress }) => {
         const cx = mx + (-dy/len)*2, cy = my + (dx/len)*2;
         return (
           <path key={i}
-            d={`M ${x1}% ${y1}% Q ${cx}% ${cy}% ${x2}% ${y2}%`}
+            d={`M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`}
             stroke={completed ? '#00FF88' : active ? '#6C63FF' : 'rgba(255,255,255,0.07)'}
-            strokeWidth={active ? 2.5 : 1}
-            strokeDasharray={completed ? 'none' : active ? '7 4' : '3 6'}
+            strokeWidth={active ? 0.35 : 0.18}
+            strokeDasharray={completed ? 'none' : active ? '1.2 0.7' : '0.5 1'}
             fill="none"
             filter={active ? 'url(#glow)' : ''}
             opacity={active ? 0.85 : 0.25}
+            vectorEffect="non-scaling-stroke"
           />
         );
       })}
