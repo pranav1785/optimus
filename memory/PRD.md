@@ -175,7 +175,7 @@ chat_sessions: { session_id, last_active }
 - [x] Full ARTICLES content (6 articles with proper markdown content + article reader)
 - [x] Extended INFO_DEFINITIONS (20 terms)
 - [x] **Hex Island Roadmap Redesign v2** (Feb 2026): Fixed overlapping zone badges (placed in safe gap rows between hex rows), fixed Town 1 cut-off by adjusting y=84%, made locked hexes visible with slate-blue (#1a1c38) color, peak hex clipping fixed (y=6%), all 12 towns fully visible without text/badge overlap
-- [x] **SVG Path Fix** (Mar 2026): Removed invalid `%` signs from SVG `d` attribute in PathLines component. Added `viewBox="0 0 100 100" preserveAspectRatio="none"` and `vectorEffect="non-scaling-stroke"`. Hexagon click → popup → "Enter Town/Continue Journey" navigation now fully working. Tested 100% pass.
+- [x] **SVG Path Fix + Popup Click Fix** (Mar 2026): (1) Removed invalid `%` signs from SVG `d` attribute in PathLines — added `viewBox="0 0 100 100"` + `vectorEffect="non-scaling-stroke"`. (2) Fixed "Continue Journey" button unclickable — root cause was `absolute inset-0` gradient div inside popup card missing `pointerEvents:'none'`, intercepting all clicks. Also separated outer popup animation from card animation, changed action button to `<Link>` component, boosted z-index to 9999. Tested 100% pass with regular `page.click()`.
 - [x] **MA10/MA30 default OFF** in TradingTerminal (cleaner default chart view)
 - [x] **Volume tooltip text → white** in TradingTerminal (readability fix)
 - [x] **Daily Quiz banner** on Dashboard — prominent green CTA between stats and chart
