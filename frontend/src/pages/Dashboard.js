@@ -138,6 +138,38 @@ const Dashboard = () => {
         ))}
       </div>
 
+      {/* Daily Quiz Banner */}
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
+        className="glass rounded-2xl mb-6 p-4 sm:p-5 overflow-hidden relative"
+        style={{ background: 'linear-gradient(135deg, rgba(0,255,136,0.07), rgba(0,212,255,0.04))', border: '1px solid rgba(0,255,136,0.18)' }}>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center"
+              style={{ background: 'rgba(0,255,136,0.12)', border: '1px solid rgba(0,255,136,0.25)' }}>
+              <BookOpen size={22} style={{ color: '#00FF88' }} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-0.5">
+                <p className="font-black text-base sm:text-lg" style={{ fontFamily: 'Outfit, sans-serif', color: isDark ? '#fff' : '#0F172A' }}>
+                  Daily Quiz
+                </p>
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-black text-black" style={{ background: '#FFB800' }}>
+                  +100 XP
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm" style={{ color: isDark ? 'rgba(255,255,255,0.45)' : '#64748b' }}>
+                Test your market knowledge · Streak bonus available · Resets daily
+              </p>
+            </div>
+          </div>
+          <Link to="/learn" data-testid="daily-quiz-btn"
+            className="flex-shrink-0 px-4 sm:px-6 py-2.5 rounded-xl font-bold text-sm transition-all active:scale-95 hover:opacity-90"
+            style={{ background: 'linear-gradient(135deg, #00FF88, #00D4FF)', color: '#000', boxShadow: '0 0 20px rgba(0,255,136,0.3)' }}>
+            Take Quiz
+          </Link>
+        </div>
+      </motion.div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Portfolio Chart */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}

@@ -31,8 +31,8 @@ const TradingTerminal = () => {
   const [selectedStock, setSelectedStock] = useState(null);
   const [chartData, setChartData] = useState([]);
   const [timeframe, setTimeframe] = useState('3M');
-  const [showMA10, setShowMA10] = useState(true);
-  const [showMA30, setShowMA30] = useState(true);
+  const [showMA10, setShowMA10] = useState(false);
+  const [showMA30, setShowMA30] = useState(false);
   const [order, setOrder] = useState({ side: 'BUY', type: 'MARKET', qty: 1, price: '' });
   const [orderMsg, setOrderMsg] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -220,6 +220,8 @@ const TradingTerminal = () => {
                     <XAxis dataKey="time" hide />
                     <Tooltip
                       contentStyle={{ background: 'rgba(17,17,17,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, fontSize: 11 }}
+                      labelStyle={{ color: 'rgba(255,255,255,0.5)' }}
+                      itemStyle={{ color: '#ffffff' }}
                       formatter={v => [typeof v === 'number' ? v.toLocaleString('en-IN') : v, 'Volume']}
                       labelFormatter={label => `Date: ${label}`}
                     />
