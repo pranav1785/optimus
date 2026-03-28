@@ -174,6 +174,10 @@ chat_sessions: { session_id, last_active }
 - [x] InfoButton on: Analysis (BB, RSI, MACD, P/E, ROE, EPS, Market Cap, etc.), AlgoLab (Sharpe, Drawdown, Win Rate, Equity Curve), Portfolio (P&L), Trade (Volume)
 - [x] Full ARTICLES content (6 articles with proper markdown content + article reader)
 - [x] Extended INFO_DEFINITIONS (20 terms)
+- [x] **Hex Island Roadmap Redesign** (Feb 2026): Hexagonal clip-path tiles, zone-specific vibrant colors (beach=amber, forest=green, mountain=indigo, peak=gold), organic radial-gradient terrain, hex-grid ocean background, compact pill labels (no overlap), floating decorative elements
+- [x] **MA10/MA30 default OFF** in TradingTerminal (cleaner default chart view)
+- [x] **Volume tooltip text → white** in TradingTerminal (readability fix)
+- [x] **Daily Quiz banner** on Dashboard — prominent green CTA between stats and chart
 
 ### Pending / Backlog 🔲
 - [ ] P1: TATAMOTORS.NS yfinance symbol fix (currently uses fallback mock price)
