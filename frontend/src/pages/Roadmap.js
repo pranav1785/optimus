@@ -244,10 +244,10 @@ const TownPopup = ({ town, progress, onClose, onEnter }) => {
     <motion.div initial={{ opacity:0, scale:0.9, y:20 }} animate={{ opacity:1, scale:1, y:0 }}
       exit={{ opacity:0, scale:0.9, y:20 }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" style={{ pointerEvents:'none' }} />
       <div className="relative w-full max-w-sm rounded-3xl p-6 overflow-hidden"
         style={{ background:'rgba(10,10,20,0.97)', border:`1px solid ${town.color}30`,
-                 boxShadow:`0 0 60px ${town.color}18` }}
+                 boxShadow:`0 0 60px ${town.color}18`, zIndex:1 }}
         onClick={e => e.stopPropagation()}>
         <div className="absolute inset-0 opacity-5"
           style={{ background:`radial-gradient(circle at 50% 0%, ${town.color}, transparent 70%)` }} />
@@ -314,7 +314,7 @@ const TownPopup = ({ town, progress, onClose, onEnter }) => {
             <Lock size={12} /> Complete the previous town to unlock this location
           </div>
         ) : (
-          <button onClick={() => onEnter(town)} data-testid={`enter-town-${town.id}`}
+          <button onClick={(e) => { e.stopPropagation(); onEnter(town); }} data-testid={`enter-town-${town.id}`}
             className="w-full py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all hover:opacity-90"
             style={{ background:`linear-gradient(135deg,${town.color},#00D4FF)` }}>
             {status==='completed' ? <><Award size={16} /> Review Town</> :
